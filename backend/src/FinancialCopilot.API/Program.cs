@@ -121,6 +121,23 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     try
     {
+        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+        Console.WriteLine($"🔍 ConnectionString length: {connectionString?.Length ?? 0}");
+        
+        if (string.IsNullOrEmpty(connectionString))
+        {
+            Console.WriteLine("❌ ERROR: ConnectionString is null or empty!");
+            Console.WriteLine("Available configuration keys:");
+            foreach (var key in builder.Configuration.AsEnumerable())
+            {
+                if (key.Key.Contains("Connection", StringComparison.OrdinalIgnoreCase))
+                {
+                    Console.WriteLine($"  - {key.Key}: {(string.IsNullOrEmpty(key.Value) ? "(empty)" : "***")}");
+                }
+            }
+            throw new InvalidOperationException("ConnectionString is not configured");
+        }
+        
         db.Database.Migrate();
         Console.WriteLine("✓ Database migrations applied successfully");
     }
