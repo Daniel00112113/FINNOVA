@@ -123,7 +123,7 @@ using (var scope = app.Services.CreateScope())
     {
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
         Console.WriteLine($"🔍 ConnectionString length: {connectionString?.Length ?? 0}");
-        Console.WriteLine($"🔍 ConnectionString (first 50 chars): {connectionString?.Substring(0, Math.Min(50, connectionString.Length ?? 0))}");
+        Console.WriteLine($"🔍 ConnectionString (first 50 chars): {(connectionString != null && connectionString.Length > 0 ? connectionString.Substring(0, Math.Min(50, connectionString.Length)) : "null")}");
         Console.WriteLine($"🔍 ConnectionString (full): {connectionString}");
         
         if (string.IsNullOrEmpty(connectionString))
