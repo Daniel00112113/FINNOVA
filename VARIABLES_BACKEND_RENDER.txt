@@ -1,0 +1,25 @@
+# ========================================
+# VARIABLES DE ENTORNO - BACKEND RENDER
+# ========================================
+# Servicio: finnova-backend-hquh
+# URL: https://finnova-backend-hquh.onrender.com
+# ========================================
+
+# Entorno de ejecución
+ASPNETCORE_ENVIRONMENT=Production
+
+# Base de Datos PostgreSQL (Formato .NET/Npgsql)
+# IMPORTANTE: Debe usar finnova_user, NO postgres
+ConnectionStrings__DefaultConnection=Host=dpg-d6msbt7kijhs73e3cpp0-a.oregon-postgres.render.com;Database=finnova_db;Username=finnova_user;Password=ITb1tK8vODm0GUCVP0sSU7byjuWOuyyK;SSL Mode=Require;Trust Server Certificate=true
+
+# JWT Configuration
+Jwt__Key=5MhKNCPWe8S0419g7dykLwzfYQqsXDubAtlxJUjFZTVRIroamc2Hin3B6EvGOp
+Jwt__Issuer=FinancialCopilot
+Jwt__Audience=FinancialCopilotUsers
+Jwt__ExpirationDays=7
+
+# CORS - Frontend URL
+Cors__AllowedOrigins__0=https://finnova-theta.vercel.app
+
+# AI Engine URL
+AiEngine__BaseUrl=https://finnova-ai-engine.onrender.com
