@@ -64,21 +64,27 @@ export const logout = () => {
 
 // Verificar si está autenticado
 export const isAuthenticated = (): boolean => {
+    if (typeof window === 'undefined') return false
     return !!localStorage.getItem('token')
 }
 
 // Obtener token actual
 export const getToken = (): string | null => {
+    if (typeof window === 'undefined') return null
     return localStorage.getItem('token')
 }
 
 // Obtener userId actual
 export const getUserId = (): string | null => {
+    if (typeof window === 'undefined') return null
     return localStorage.getItem('userId')
 }
 
 // Obtener datos del usuario
 export const getUserData = () => {
+    if (typeof window === 'undefined') {
+        return { userId: null, name: null, email: null }
+    }
     return {
         userId: localStorage.getItem('userId'),
         name: localStorage.getItem('userName'),
