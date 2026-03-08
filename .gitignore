@@ -7,7 +7,6 @@
 .env.production
 .env.development
 claves-generadas.txt
-appsettings.Production.json
 
 # Archivos de configuración local
 backend/.env
