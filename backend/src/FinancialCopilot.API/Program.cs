@@ -128,11 +128,11 @@ using (var scope = app.Services.CreateScope())
         {
             Console.WriteLine("❌ ERROR: ConnectionString is null or empty!");
             Console.WriteLine("Available configuration keys:");
-            foreach (var key in builder.Configuration.AsEnumerable())
+            foreach (var configKey in builder.Configuration.AsEnumerable())
             {
-                if (key.Key.Contains("Connection", StringComparison.OrdinalIgnoreCase))
+                if (configKey.Key.Contains("Connection", StringComparison.OrdinalIgnoreCase))
                 {
-                    Console.WriteLine($"  - {key.Key}: {(string.IsNullOrEmpty(key.Value) ? "(empty)" : "***")}");
+                    Console.WriteLine($"  - {configKey.Key}: {(string.IsNullOrEmpty(configKey.Value) ? "(empty)" : "***")}");
                 }
             }
             throw new InvalidOperationException("ConnectionString is not configured");
