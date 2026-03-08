@@ -36,7 +36,7 @@ export default function Logo({
                 </div>
             ) : (
                 <Image
-                    src="/images/logo/logo.png"
+                    src="/images/logo/LOGO.png"
                     alt="FINNOVA"
                     width={width}
                     height={height}
