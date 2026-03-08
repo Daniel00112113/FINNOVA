@@ -123,18 +123,12 @@ using (var scope = app.Services.CreateScope())
     {
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
         Console.WriteLine($"🔍 ConnectionString length: {connectionString?.Length ?? 0}");
+        Console.WriteLine($"🔍 ConnectionString (first 50 chars): {connectionString?.Substring(0, Math.Min(50, connectionString.Length ?? 0))}");
+        Console.WriteLine($"🔍 ConnectionString (full): {connectionString}");
         
         if (string.IsNullOrEmpty(connectionString))
         {
             Console.WriteLine("❌ ERROR: ConnectionString is null or empty!");
-            Console.WriteLine("Available configuration keys:");
-            foreach (var configKey in builder.Configuration.AsEnumerable())
-            {
-                if (configKey.Key.Contains("Connection", StringComparison.OrdinalIgnoreCase))
-                {
-                    Console.WriteLine($"  - {configKey.Key}: {(string.IsNullOrEmpty(configKey.Value) ? "(empty)" : "***")}");
-                }
-            }
             throw new InvalidOperationException("ConnectionString is not configured");
         }
         
@@ -144,6 +138,7 @@ using (var scope = app.Services.CreateScope())
     catch (Exception ex)
     {
         Console.WriteLine($"⚠ Warning: Could not apply migrations: {ex.Message}");
+        Console.WriteLine($"⚠ Exception type: {ex.GetType().Name}");
         // En producción, las migraciones son críticas
         if (!app.Environment.IsDevelopment())
         {
