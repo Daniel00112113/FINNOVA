@@ -158,7 +158,7 @@ app.Use(async (context, next) =>
         context.Response.ContentType = "application/json";
         
         // En producción, no exponer detalles del error
-        var errorResponse = app.Environment.IsDevelopment()
+        object errorResponse = app.Environment.IsDevelopment()
             ? new 
             { 
                 error = ex.Message,
