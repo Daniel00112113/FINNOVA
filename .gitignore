@@ -1,0 +1,100 @@
+# ⚠️ ARCHIVOS SENSIBLES - NO SUBIR A GIT
+
+# Claves y configuración sensible
+*.env
+.env
+.env.local
+.env.production
+.env.development
+claves-generadas.txt
+appsettings.Production.json
+
+# Archivos de configuración local
+backend/.env
+frontend/.env.local
+frontend/.env.production
+
+# Node modules
+node_modules/
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+
+# Python
+ai-engine/venv/
+ai-engine/__pycache__/
+ai-engine/**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# .NET
+backend/**/bin/
+backend/**/obj/
+backend/**/*.user
+backend/**/*.suo
+backend/**/*.cache
+backend/.vs/
+*.dll
+*.exe
+*.pdb
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Modelos entrenados (muy pesados)
+ai-engine/models/professional/*.pkl
+ai-engine/models/professional/*.joblib
+
+# Backups
+backups/
+*.backup
+*.bak
+
+# Temporales
+tmp/
+temp/
+*.tmp
+
+# Sistema operativo
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# Certificados SSL
+*.pem
+*.key
+*.crt
+ssl/
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# Scripts temporales con tokens
+setup-git-fresh.ps1
+crear-repo-github.ps1

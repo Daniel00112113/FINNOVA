@@ -1,0 +1,114 @@
+using FinancialCopilot.Application.Common.Interfaces;
+using FinancialCopilot.Application.DTOs;
+using FinancialCopilot.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+
+namespace FinancialCopilot.API.Controllers;
+
+[Authorize]
+[ApiController]
+[Route("api/users/{userId}/[controller]")]
+public class ExpensesController : ControllerBase
+{
+    private readonly IApplicationDbContext _context;
+
+    public ExpensesController(IApplicationDbContext context)
+    {
+        _context = context;
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<ExpenseDto>> Create(Guid userId, CreateExpenseDto dto)
+    {
+        try
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+                return NotFound("User not found");
+
+            var expense = new Expense
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                Amount = dto.Amount,
+                Category = dto.Category,
+                Date = DateTime.SpecifyKind(dto.Date, DateTimeKind.Utc),
+                Description = dto.Description,
+                Location = dto.Location,
+                IsRecurring = dto.IsRecurring,
+                RecurrenceType = dto.RecurrenceType != null ? Enum.Parse<RecurrenceType>(dto.RecurrenceType) : null,
+                Tags = dto.Tags ?? new List<string>(),
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _context.Expenses.Add(expense);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetById), new { userId, id = expense.Id },
+                new ExpenseDto(
+                    expense.Id, 
+                    expense.Amount, 
+                    expense.Category, 
+                    expense.Date, 
+                    expense.Description,
+                    expense.Location,
+                    expense.IsRecurring,
+                    expense.RecurrenceType?.ToString(),
+                    expense.Tags
+                ));
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Expense Create Error: {ex.Message}");
+            Console.WriteLine($"Stack: {ex.StackTrace}");
+            return StatusCode(500, new { error = ex.Message, details = ex.InnerException?.Message });
+        }
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<List<ExpenseDto>>> GetAll(Guid userId)
+    {
+        var expenses = await _context.Expenses
+            .Where(e => e.UserId == userId)
+            .OrderByDescending(e => e.Date)
+            .Select(e => new ExpenseDto(
+                e.Id, 
+                e.Amount, 
+                e.Category, 
+                e.Date, 
+                e.Description,
+                e.Location,
+                e.IsRecurring,
+                e.RecurrenceType != null ? e.RecurrenceType.ToString() : null,
+                e.Tags
+            ))
+            .ToListAsync();
+
+        return Ok(expenses);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<ExpenseDto>> GetById(Guid userId, Guid id)
+    {
+        var expense = await _context.Expenses
+            .FirstOrDefaultAsync(e => e.Id == id && e.UserId == userId);
+
+        if (expense == null)
+            return NotFound();
+
+        return new ExpenseDto(
+            expense.Id, 
+            expense.Amount, 
+            expense.Category, 
+            expense.Date, 
+            expense.Description,
+            expense.Location,
+            expense.IsRecurring,
+            expense.RecurrenceType?.ToString(),
+            expense.Tags
+        );
+    }
+}
+
