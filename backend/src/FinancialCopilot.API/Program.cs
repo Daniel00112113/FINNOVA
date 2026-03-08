@@ -115,10 +115,9 @@ builder.Services.AddRateLimiter(options =>
 
 var app = builder.Build();
 
-// Aplicar migraciones automáticamente en desarrollo
-if (app.Environment.IsDevelopment())
+// Aplicar migraciones automáticamente
+using (var scope = app.Services.CreateScope())
 {
-    using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     try
     {
@@ -128,6 +127,12 @@ if (app.Environment.IsDevelopment())
     catch (Exception ex)
     {
         Console.WriteLine($"⚠ Warning: Could not apply migrations: {ex.Message}");
+        // En producción, las migraciones son críticas
+        if (!app.Environment.IsDevelopment())
+        {
+            Console.WriteLine("❌ CRITICAL: Database migrations failed in production");
+            throw;
+        }
     }
 }
 
