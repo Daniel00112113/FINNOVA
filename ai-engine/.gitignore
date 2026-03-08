@@ -1,0 +1,26 @@
+# Modelos entrenados (archivos grandes)
+models/professional/*.pkl
+models/professional/*.json
+*.pkl
+*.joblib
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# Datos
+*.csv
+*.db
+*.sqlite
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
