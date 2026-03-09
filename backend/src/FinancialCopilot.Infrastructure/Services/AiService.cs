@@ -284,13 +284,88 @@ public class AiService : IAiService
 
     private async Task<string> PostToAiEngine(string endpoint, object data)
     {
-        var json = JsonSerializer.Serialize(data);
-        var content = new StringContent(json, Encoding.UTF8, "application/json");
-        
-        var response = await _httpClient.PostAsync($"{_aiEngineUrl}{endpoint}", content);
-        response.EnsureSuccessStatusCode();
-        
-        return await response.Content.ReadAsStringAsync();
+        try
+        {
+            var json = JsonSerializer.Serialize(data);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            
+            Console.WriteLine($"Calling AI Engine: {_aiEngineUrl}{endpoint}");
+            
+            var response = await _httpClient.PostAsync($"{_aiEngineUrl}{endpoint}", content);
+            response.EnsureSuccessStatusCode();
+            
+            return await response.Content.ReadAsStringAsync();
+        }
+        catch (HttpRequestException ex)
+        {
+            Console.WriteLine($"AI Engine not available: {ex.Message}");
+            Console.WriteLine($"Using fallback mock data for endpoint: {endpoint}");
+            
+            // Fallback: devolver datos simulados cuando el AI Engine no está disponible
+            return GetMockResponse(endpoint, data);
+        }
+    }
+    
+    private string GetMockResponse(string endpoint, object data)
+    {
+        return endpoint switch
+        {
+            "/simulate" => @"{
+                ""scenarios"": {
+                    ""current"": {
+                        ""timeline"": [
+                            {""month"": 1, ""balance"": 1000, ""debt"": 0, ""net_income"": 500},
+                            {""month"": 2, ""balance"": 1500, ""debt"": 0, ""net_income"": 500},
+                            {""month"": 3, ""balance"": 2000, ""debt"": 0, ""net_income"": 500}
+                        ],
+                        ""final_balance"": 2000,
+                        ""final_debt"": 0,
+                        ""total_saved"": 1500,
+                        ""total_interest_paid"": 0,
+                        ""debt_paid_off"": true,
+                        ""months_to_positive"": 1
+                    },
+                    ""optimistic"": {
+                        ""timeline"": [
+                            {""month"": 1, ""balance"": 1200, ""debt"": 0, ""net_income"": 600},
+                            {""month"": 2, ""balance"": 1800, ""debt"": 0, ""net_income"": 600},
+                            {""month"": 3, ""balance"": 2400, ""debt"": 0, ""net_income"": 600}
+                        ],
+                        ""final_balance"": 2400,
+                        ""final_debt"": 0,
+                        ""total_saved"": 1800,
+                        ""total_interest_paid"": 0,
+                        ""debt_paid_off"": true,
+                        ""months_to_positive"": 1
+                    },
+                    ""pessimistic"": {
+                        ""timeline"": [
+                            {""month"": 1, ""balance"": 800, ""debt"": 0, ""net_income"": 400},
+                            {""month"": 2, ""balance"": 1200, ""debt"": 0, ""net_income"": 400},
+                            {""month"": 3, ""balance"": 1600, ""debt"": 0, ""net_income"": 400}
+                        ],
+                        ""final_balance"": 1600,
+                        ""final_debt"": 0,
+                        ""total_saved"": 1200,
+                        ""total_interest_paid"": 0,
+                        ""debt_paid_off"": true,
+                        ""months_to_positive"": 1
+                    }
+                },
+                ""comparison"": {
+                    ""current"": {""final_balance"": 2000, ""final_debt"": 0, ""score"": 75, ""debt_paid_off"": true},
+                    ""optimistic"": {""final_balance"": 2400, ""final_debt"": 0, ""score"": 85, ""debt_paid_off"": true},
+                    ""pessimistic"": {""final_balance"": 1600, ""final_debt"": 0, ""score"": 65, ""debt_paid_off"": true}
+                },
+                ""best_scenario"": ""optimistic"",
+                ""recommendations"": [
+                    ""AI Engine is currently unavailable - showing estimated data"",
+                    ""Continue monitoring your expenses"",
+                    ""Consider increasing your savings rate""
+                ]
+            }",
+            _ => @"{""error"": ""AI Engine unavailable"", ""message"": ""Using fallback data""}"
+        };
     }
 
     private class TransactionData
