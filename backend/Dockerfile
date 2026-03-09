@@ -23,12 +23,12 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 COPY --from=build /app/publish .
 
-# Exponer puerto
-EXPOSE 5000
+# Exponer puerto (Render usa PORT dinámico)
+EXPOSE 10000
 
 # Variables de entorno
-ENV ASPNETCORE_URLS=http://+:5000
 ENV ASPNETCORE_ENVIRONMENT=Production
 
 # Comando de inicio
-ENTRYPOINT ["dotnet", "FinancialCopilot.API.dll"]
+# Render asigna el puerto dinámicamente via variable PORT
+ENTRYPOINT ["sh", "-c", "dotnet FinancialCopilot.API.dll --urls http://0.0.0.0:${PORT:-10000}"]
