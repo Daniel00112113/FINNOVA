@@ -125,9 +125,17 @@ export default function SimulatorPage() {
         optimized: '#00C49F'
     }
 
-    const chartData = simulation.scenarios[selectedScenarios[0]]?.timeline.map((_, index) => {
+    // Filtrar selectedScenarios para incluir solo los que existen
+    const validSelectedScenarios = selectedScenarios.filter(s => simulation.scenarios[s])
+
+    // Si no hay escenarios válidos seleccionados, usar los disponibles
+    const scenariosToUse = validSelectedScenarios.length > 0
+        ? validSelectedScenarios
+        : Object.keys(simulation.scenarios).slice(0, 2)
+
+    const chartData = simulation.scenarios[scenariosToUse[0]]?.timeline.map((_, index) => {
         const dataPoint: any = { month: index + 1 }
-        selectedScenarios.forEach(scenario => {
+        scenariosToUse.forEach(scenario => {
             if (simulation.scenarios[scenario]) {
                 dataPoint[scenario] = simulation.scenarios[scenario].timeline[index]?.balance || 0
             }
@@ -136,6 +144,9 @@ export default function SimulatorPage() {
     }) || []
 
     const toggleScenario = (scenario: string) => {
+        // Solo permitir toggle si el escenario existe
+        if (!simulation.scenarios[scenario]) return
+
         if (selectedScenarios.includes(scenario)) {
             setSelectedScenarios(selectedScenarios.filter(s => s !== scenario))
         } else {
@@ -494,19 +505,19 @@ export default function SimulatorPage() {
                                     <div>
                                         <p className="text-sm text-gray-600">Balance Final</p>
                                         <p className="text-2xl font-bold text-green-600">
-                                            {formatCOP(simulation.scenarios.optimized.finalBalance)}
+                                            {formatCOP(simulation.scenarios.optimistic?.finalBalance || simulation.scenarios[simulation.bestScenario]?.finalBalance || 0)}
                                         </p>
                                     </div>
                                     <div>
                                         <p className="text-sm text-gray-600">Deuda Final</p>
                                         <p className="text-2xl font-bold text-green-600">
-                                            {formatCOP(simulation.scenarios.optimized.finalDebt)}
+                                            {formatCOP(simulation.scenarios.optimistic?.finalDebt || simulation.scenarios[simulation.bestScenario]?.finalDebt || 0)}
                                         </p>
                                     </div>
                                     <div className="pt-3 border-t border-green-200">
                                         <p className="text-sm text-gray-600">Mejora Total</p>
                                         <p className="text-3xl font-black text-green-600">
-                                            {formatCOP(simulation.scenarios.optimized.finalBalance - simulation.scenarios.current.finalBalance)}
+                                            {formatCOP((simulation.scenarios.optimistic?.finalBalance || simulation.scenarios[simulation.bestScenario]?.finalBalance || 0) - (simulation.scenarios.current?.finalBalance || 0))}
                                         </p>
                                     </div>
                                 </div>
