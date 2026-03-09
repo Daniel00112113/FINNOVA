@@ -125,6 +125,19 @@ namespace FinancialCopilot.Infrastructure.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
+                    b.Property<string>("Location")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsRecurring")
+                        .HasColumnType("boolean");
+
+                    b.Property<int?>("RecurrenceType")
+                        .HasColumnType("integer");
+
+                    b.Property<string[]>("Tags")
+                        .IsRequired()
+                        .HasColumnType("text[]");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
