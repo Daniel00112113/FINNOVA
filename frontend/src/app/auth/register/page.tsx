@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { register } from '@/lib/auth'
+import Logo from '@/components/Logo'
 
 export default function RegisterPage() {
     const router = useRouter()
@@ -44,11 +45,14 @@ export default function RegisterPage() {
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4">
             <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-xl">
-                <div>
-                    <h2 className="text-center text-4xl font-black text-gray-900">
-                        💰 Financial Copilot
+                <div className="text-center">
+                    <div className="flex justify-center mb-4">
+                        <Logo size="lg" />
+                    </div>
+                    <h2 className="text-3xl font-black text-gray-900">
+                        Financial Copilot
                     </h2>
-                    <p className="mt-2 text-center text-sm text-gray-600">
+                    <p className="mt-2 text-sm text-gray-600">
                         Crea tu cuenta gratis
                     </p>
                 </div>
