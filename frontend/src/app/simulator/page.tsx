@@ -52,7 +52,7 @@ export default function SimulatorPage() {
     const [userExpenses, setUserExpenses] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
     const [userId, setUserId] = useState<string>('')
-    const [selectedScenarios, setSelectedScenarios] = useState<string[]>(['current', 'optimized'])
+    const [selectedScenarios, setSelectedScenarios] = useState<string[]>(['current', 'optimistic'])
     const [months, setMonths] = useState(12)
 
     useEffect(() => {
