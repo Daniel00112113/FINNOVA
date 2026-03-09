@@ -41,3 +41,8 @@ src/
 - TypeScript
 - TailwindCSS
 - Axios
+- Recharts
+
+## 🌐 Despliegue
+
+Desplegado en Vercel: https://finnova-theta.vercel.app
