@@ -6,6 +6,7 @@ import { useState } from 'react'
 interface LogoProps {
     width?: number
     height?: number
+    size?: 'sm' | 'md' | 'lg' | 'xl'
     className?: string
     priority?: boolean
     showText?: boolean
@@ -13,33 +14,44 @@ interface LogoProps {
 }
 
 export default function Logo({
-    width = 40,
-    height = 40,
+    width,
+    height,
+    size = 'md',
     className = '',
     priority = false,
     showText = false,
     showTagline = false
 }: LogoProps) {
     const [imageError, setImageError] = useState(false)
-    const [taglineError, setTaglineError] = useState(false)
+
+    // Determinar dimensiones basadas en size si no se especifican width/height
+    const sizeMap = {
+        sm: 32,
+        md: 40,
+        lg: 64,
+        xl: 80
+    }
+
+    const finalWidth = width || sizeMap[size]
+    const finalHeight = height || sizeMap[size]
 
     return (
         <div className="flex items-center gap-3">
             {imageError ? (
                 <div
                     className={`flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg ${className}`}
-                    style={{ width, height }}
+                    style={{ width: finalWidth, height: finalHeight }}
                 >
-                    <span className="text-white font-bold" style={{ fontSize: width * 0.6 }}>
-                        🤖
+                    <span className="text-white font-bold" style={{ fontSize: finalWidth * 0.6 }}>
+                        💰
                     </span>
                 </div>
             ) : (
                 <Image
                     src="/images/logo/LOGO.png"
                     alt="FINNOVA"
-                    width={width}
-                    height={height}
+                    width={finalWidth}
+                    height={finalHeight}
                     priority={priority}
                     className={`rounded-lg ${className}`}
                     onError={() => setImageError(true)}
@@ -61,7 +73,6 @@ export default function Logo({
                     onError={(e) => {
                         console.error('Error loading tagline image')
                         e.currentTarget.style.display = 'none'
-                        setTaglineError(true)
                     }}
                 />
             )}
