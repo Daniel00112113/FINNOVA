@@ -39,6 +39,9 @@ services:
     runtime: docker
     dockerfilePath: ./frontend/Dockerfile
     dockerContext: ./frontend
+    buildArgs:
+      - key: NEXT_PUBLIC_API_URL
+        value: https://finnova-backend.onrender.com/api
     envVars:
       - key: NEXT_PUBLIC_API_URL
         value: https://finnova-backend.onrender.com/api

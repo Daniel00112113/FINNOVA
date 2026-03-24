@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Trophy, Star, Flame, X } from 'lucide-react';
 import Link from 'next/link';
+import { api } from '@/lib/api';
 
 interface GamificationData {
     progress: {
@@ -36,22 +37,12 @@ export default function FloatingGamification() {
 
     const fetchGamificationData = async () => {
         try {
-            const token = localStorage.getItem('token');
             const userId = localStorage.getItem('userId');
 
-            if (!userId || !token) return;
+            if (!userId) return;
 
-            const response = await fetch(`http://localhost:5000/api/users/${userId}/gamification/stats`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (response.ok) {
-                const result = await response.json();
-                setData(result);
-            }
+            const response = await api.get(`/users/${userId}/gamification/stats`);
+            setData(response.data);
         } catch (error) {
             console.error('Error fetching gamification:', error);
         }

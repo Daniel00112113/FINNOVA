@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Trophy, Flame, Star, TrendingUp } from 'lucide-react';
+import { api } from '@/lib/api';
 
 interface GamificationData {
     progress: {
@@ -48,27 +49,16 @@ export default function GamificationWidget() {
 
     const fetchGamificationData = async () => {
         try {
-            const token = localStorage.getItem('token');
-
             const userId = localStorage.getItem('userId');
 
-            if (!userId || !token) {
-                console.error('No userId or token found');
+            if (!userId) {
+                console.error('No userId found');
                 setLoading(false);
                 return;
             }
 
-            const response = await fetch(`http://localhost:5000/api/users/${userId}/gamification/stats`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (response.ok) {
-                const result = await response.json();
-                setData(result);
-            }
+            const response = await api.get(`/users/${userId}/gamification/stats`);
+            setData(response.data);
         } catch (error) {
             console.error('Error fetching gamification:', error);
         } finally {
