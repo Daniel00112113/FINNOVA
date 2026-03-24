@@ -175,6 +175,9 @@ using (var scope = app.Services.CreateScope())
         {
             Console.WriteLine("✓ Database is up to date, no migrations needed");
         }
+
+        // Aplicar migraciones adicionales (gamificación, fix Tags)
+        await ApplyCustomMigrationsAsync(db);
     }
     catch (Npgsql.PostgresException pgEx) when (pgEx.SqlState == "42701")
     {
@@ -285,3 +288,73 @@ Console.WriteLine($"🔐 JWT Issuer: {builder.Configuration["Jwt:Issuer"] ?? "Fi
 Console.WriteLine("✅ Application started successfully");
 
 app.Run();
+
+// Migraciones SQL personalizadas (gamificación, fix de columnas)
+static async Task ApplyCustomMigrationsAsync(ApplicationDbContext db)
+{
+    try
+    {
+        var conn = db.Database.GetDbConnection();
+        if (conn.State != System.Data.ConnectionState.Open)
+            await conn.OpenAsync();
+
+        using var cmd = conn.CreateCommand();
+
+        // Fix: Tags de text a text[]
+        cmd.CommandText = @"
+            DO $$
+            BEGIN
+                IF EXISTS (
+                    SELECT 1 FROM information_schema.columns
+                    WHERE table_name = 'Expenses' AND column_name = 'Tags' AND data_type = 'text'
+                ) THEN
+                    ALTER TABLE ""Expenses""
+                    ALTER COLUMN ""Tags"" TYPE text[]
+                    USING CASE WHEN ""Tags"" IS NULL OR ""Tags"" = '' THEN ARRAY[]::text[] ELSE ARRAY[""Tags""] END;
+                    RAISE NOTICE 'Tags migrado a text[]';
+                END IF;
+            END $$;";
+        await cmd.ExecuteNonQueryAsync();
+
+        // Gamificación: user_progress
+        cmd.CommandText = @"
+            CREATE TABLE IF NOT EXISTS user_progress (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                user_id UUID NOT NULL REFERENCES ""Users""(""Id"") ON DELETE CASCADE,
+                points INTEGER NOT NULL DEFAULT 0,
+                level INTEGER NOT NULL DEFAULT 1,
+                current_streak INTEGER NOT NULL DEFAULT 0,
+                longest_streak INTEGER NOT NULL DEFAULT 0,
+                last_activity_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                total_logins INTEGER NOT NULL DEFAULT 1,
+                created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(user_id)
+            );";
+        await cmd.ExecuteNonQueryAsync();
+
+        // Gamificación: achievements
+        cmd.CommandText = @"
+            CREATE TABLE IF NOT EXISTS achievements (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                user_id UUID NOT NULL REFERENCES ""Users""(""Id"") ON DELETE CASCADE,
+                type VARCHAR(100) NOT NULL,
+                points_earned INTEGER NOT NULL DEFAULT 0,
+                description TEXT,
+                created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );";
+        await cmd.ExecuteNonQueryAsync();
+
+        // Índices
+        cmd.CommandText = @"
+            CREATE INDEX IF NOT EXISTS idx_user_progress_user_id ON user_progress(user_id);
+            CREATE INDEX IF NOT EXISTS idx_achievements_user_id ON achievements(user_id);";
+        await cmd.ExecuteNonQueryAsync();
+
+        Console.WriteLine("✓ Custom migrations applied (gamification + Tags fix)");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"⚠ Custom migrations warning: {ex.Message}");
+    }
+}

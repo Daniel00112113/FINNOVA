@@ -484,13 +484,13 @@ export default function SimulatorPage() {
                                     <div>
                                         <p className="text-sm text-gray-600">Balance Final</p>
                                         <p className="text-2xl font-bold text-gray-700">
-                                            {formatCOP(simulation.scenarios.current.finalBalance)}
+                                            {formatCOP(simulation.scenarios.current?.finalBalance || 0)}
                                         </p>
                                     </div>
                                     <div>
                                         <p className="text-sm text-gray-600">Deuda Final</p>
                                         <p className="text-2xl font-bold text-red-600">
-                                            {formatCOP(simulation.scenarios.current.finalDebt)}
+                                            {formatCOP(simulation.scenarios.current?.finalDebt || 0)}
                                         </p>
                                     </div>
                                 </div>

@@ -1,0 +1,53 @@
+services:
+  # Backend .NET API
+  - type: web
+    name: finnova-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://+:8080
+      - key: ConnectionStrings__DefaultConnection
+        fromDatabase:
+          name: finnova-db
+          property: connectionString
+      - key: Jwt__Key
+        generateValue: true
+      - key: Jwt__Issuer
+        value: FinancialCopilot
+      - key: Jwt__Audience
+        value: FinancialCopilotUsers
+      - key: AiEngine__Url
+        value: https://finnova-ai.onrender.com
+
+  # AI Engine Python
+  - type: web
+    name: finnova-ai
+    runtime: docker
+    dockerfilePath: ./ai-engine/Dockerfile
+    dockerContext: ./ai-engine
+    envVars:
+      - key: PORT
+        value: 8000
+
+  # Frontend Next.js
+  - type: web
+    name: finnova-frontend
+    runtime: node
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    startCommand: node .next/standalone/server.js
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        value: https://finnova-backend.onrender.com/api
+      - key: NODE_VERSION
+        value: 20
+
+databases:
+  - name: finnova-db
+    databaseName: financialcopilot
+    user: postgres
+    plan: free
