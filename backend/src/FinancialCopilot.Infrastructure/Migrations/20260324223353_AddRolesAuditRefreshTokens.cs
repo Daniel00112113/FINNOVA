@@ -11,31 +11,13 @@ namespace FinancialCopilot.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
-                name: "FailedLoginAttempts",
-                table: "Users",
-                type: "integer",
-                nullable: false,
-                defaultValue: 0);
-
-            migrationBuilder.AddColumn<DateTime>(
-                name: "LastLoginAt",
-                table: "Users",
-                type: "timestamp with time zone",
-                nullable: true);
-
-            migrationBuilder.AddColumn<DateTime>(
-                name: "LockedUntil",
-                table: "Users",
-                type: "timestamp with time zone",
-                nullable: true);
-
-            migrationBuilder.AddColumn<string>(
-                name: "Role",
-                table: "Users",
-                type: "text",
-                nullable: false,
-                defaultValue: "");
+            // Columnas en Users — usar IF NOT EXISTS para evitar errores si ya existen
+            migrationBuilder.Sql(@"
+                ALTER TABLE ""Users"" ADD COLUMN IF NOT EXISTS ""FailedLoginAttempts"" integer NOT NULL DEFAULT 0;
+                ALTER TABLE ""Users"" ADD COLUMN IF NOT EXISTS ""LastLoginAt"" timestamp with time zone;
+                ALTER TABLE ""Users"" ADD COLUMN IF NOT EXISTS ""LockedUntil"" timestamp with time zone;
+                ALTER TABLE ""Users"" ADD COLUMN IF NOT EXISTS ""Role"" text NOT NULL DEFAULT 'user';
+            ");
 
             migrationBuilder.AlterColumn<string>(
                 name: "Location",
@@ -56,28 +38,23 @@ namespace FinancialCopilot.Infrastructure.Migrations
                 oldClrType: typeof(bool),
                 oldType: "boolean");
 
-            migrationBuilder.CreateTable(
-                name: "achievements",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "uuid", nullable: false),
-                    user_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    type = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    points_earned = table.Column<int>(type: "integer", nullable: false),
-                    description = table.Column<string>(type: "text", nullable: true),
-                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_achievements", x => x.id);
-                    table.ForeignKey(
-                        name: "FK_achievements_Users_user_id",
-                        column: x => x.user_id,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+            // achievements — ya puede existir (creada por ApplyCustomMigrationsAsync)
+            migrationBuilder.Sql(@"
+                CREATE TABLE IF NOT EXISTS achievements (
+                    id uuid NOT NULL,
+                    user_id uuid NOT NULL,
+                    type character varying(100) NOT NULL,
+                    points_earned integer NOT NULL,
+                    description text,
+                    created_at timestamp with time zone NOT NULL,
+                    CONSTRAINT ""PK_achievements"" PRIMARY KEY (id),
+                    CONSTRAINT ""FK_achievements_Users_user_id"" FOREIGN KEY (user_id)
+                        REFERENCES ""Users"" (""Id"") ON DELETE CASCADE
+                );
+                CREATE INDEX IF NOT EXISTS ""IX_achievements_user_id"" ON achievements(user_id);
+            ");
 
+            // AuditLogs — nueva tabla
             migrationBuilder.CreateTable(
                 name: "AuditLogs",
                 columns: table => new
@@ -98,6 +75,7 @@ namespace FinancialCopilot.Infrastructure.Migrations
                     table.PrimaryKey("PK_AuditLogs", x => x.Id);
                 });
 
+            // RefreshTokens — nueva tabla
             migrationBuilder.CreateTable(
                 name: "RefreshTokens",
                 columns: table => new
@@ -121,36 +99,25 @@ namespace FinancialCopilot.Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "user_progress",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "uuid", nullable: false),
-                    user_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    points = table.Column<int>(type: "integer", nullable: false),
-                    level = table.Column<int>(type: "integer", nullable: false),
-                    current_streak = table.Column<int>(type: "integer", nullable: false),
-                    longest_streak = table.Column<int>(type: "integer", nullable: false),
-                    last_activity_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    total_logins = table.Column<int>(type: "integer", nullable: false),
-                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_user_progress", x => x.id);
-                    table.ForeignKey(
-                        name: "FK_user_progress_Users_user_id",
-                        column: x => x.user_id,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_achievements_user_id",
-                table: "achievements",
-                column: "user_id");
+            // user_progress — ya puede existir
+            migrationBuilder.Sql(@"
+                CREATE TABLE IF NOT EXISTS user_progress (
+                    id uuid NOT NULL,
+                    user_id uuid NOT NULL,
+                    points integer NOT NULL DEFAULT 0,
+                    level integer NOT NULL DEFAULT 1,
+                    current_streak integer NOT NULL DEFAULT 0,
+                    longest_streak integer NOT NULL DEFAULT 0,
+                    last_activity_date timestamp with time zone NOT NULL DEFAULT now(),
+                    total_logins integer NOT NULL DEFAULT 1,
+                    created_at timestamp with time zone NOT NULL DEFAULT now(),
+                    updated_at timestamp with time zone NOT NULL DEFAULT now(),
+                    CONSTRAINT ""PK_user_progress"" PRIMARY KEY (id),
+                    CONSTRAINT ""FK_user_progress_Users_user_id"" FOREIGN KEY (user_id)
+                        REFERENCES ""Users"" (""Id"") ON DELETE CASCADE
+                );
+                CREATE UNIQUE INDEX IF NOT EXISTS ""IX_user_progress_user_id"" ON user_progress(user_id);
+            ");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AuditLogs_CreatedAt",
@@ -172,12 +139,6 @@ namespace FinancialCopilot.Infrastructure.Migrations
                 name: "IX_RefreshTokens_UserId",
                 table: "RefreshTokens",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_user_progress_user_id",
-                table: "user_progress",
-                column: "user_id",
-                unique: true);
         }
 
         /// <inheritdoc />
