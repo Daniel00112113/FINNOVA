@@ -162,37 +162,6 @@ public class AuthController : ControllerBase
         return Ok(new { userId, valid = true });
     }
 
-    /// <summary>
-    /// Bootstrap: promueve al primer admin. Solo funciona si no existe ningún admin.
-    /// Requiere una clave de bootstrap configurada en AdminBootstrap:Key
-    /// </summary>
-    [HttpPost("bootstrap-admin")]
-    public async Task<IActionResult> BootstrapAdmin([FromBody] BootstrapAdminDto dto)
-    {
-        var bootstrapKey = _context.GetType().Assembly.GetName().Name; // placeholder
-        var configKey = HttpContext.RequestServices
-            .GetRequiredService<Microsoft.Extensions.Configuration.IConfiguration>()["AdminBootstrap:Key"];
-
-        if (string.IsNullOrEmpty(configKey) || dto.BootstrapKey != configKey)
-            return Unauthorized(new { message = "Clave de bootstrap inválida" });
-
-        // Solo si no hay ningún admin
-        if (await _context.Users.AnyAsync(u => u.Role == "admin"))
-            return BadRequest(new { message = "Ya existe un administrador" });
-
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
-        if (user == null) return NotFound(new { message = "Usuario no encontrado" });
-
-        user.Role = "admin";
-        user.UpdatedAt = DateTime.UtcNow;
-        await _context.SaveChangesAsync();
-
-        await _auditService.LogAsync("bootstrap_admin", "User", user.Id, user.Id.ToString(),
-            HttpContext.Connection.RemoteIpAddress?.ToString());
-
-        return Ok(new { message = $"{user.Email} es ahora administrador" });
-    }
-
     private async Task<RefreshToken> CreateRefreshToken(Guid userId, string? ip)
     {
         // Limpiar tokens viejos del usuario (máximo 5 activos)
@@ -227,4 +196,3 @@ public record RegisterDto(string Name, string Email, string Password);
 public record LoginDto(string Email, string Password);
 public record ValidateTokenDto(string Token);
 public record RefreshTokenDto(string RefreshToken);
-public record BootstrapAdminDto(string Email, string BootstrapKey);

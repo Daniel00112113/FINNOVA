@@ -24,8 +24,10 @@ services:
         value: https://finnova-ai-engine.onrender.com
       - key: AiEngine__ApiKey
         generateValue: true
-      - key: AdminBootstrap__Key
-        generateValue: true
+      - key: AdminBootstrap__Email
+        value: ""
+      - key: AdminBootstrap__Password
+        value: ""
 
   # AI Engine Python
   - type: web

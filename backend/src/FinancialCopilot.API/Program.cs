@@ -185,6 +185,10 @@ using (var scope = app.Services.CreateScope())
 
         // Aplicar migraciones adicionales (gamificación, fix Tags)
         await ApplyCustomMigrationsAsync(db);
+
+        // Bootstrap admin — solo si ADMIN_EMAIL y ADMIN_PASSWORD están en env vars
+        // Una vez creado el admin, quitar esas variables de Render para mayor seguridad
+        await BootstrapAdminAsync(db, builder.Configuration);
     }
     catch (Npgsql.PostgresException pgEx) when (pgEx.SqlState == "42701")
     {
@@ -363,5 +367,58 @@ static async Task ApplyCustomMigrationsAsync(ApplicationDbContext db)
     catch (Exception ex)
     {
         Console.WriteLine($"⚠ Custom migrations warning: {ex.Message}");
+    }
+}
+
+// Bootstrap admin seguro — lee ADMIN_EMAIL + ADMIN_PASSWORD de env vars
+// Después de crear el admin, elimina esas variables en Render y nunca más se ejecuta
+static async Task BootstrapAdminAsync(ApplicationDbContext db, IConfiguration config)
+{
+    try
+    {
+        var adminEmail = config["AdminBootstrap:Email"];
+        var adminPassword = config["AdminBootstrap:Password"];
+
+        // Si no hay variables configuradas, no hacer nada
+        if (string.IsNullOrEmpty(adminEmail) || string.IsNullOrEmpty(adminPassword))
+            return;
+
+        // Si ya existe un admin, no hacer nada (idempotente)
+        if (await db.Users.AnyAsync(u => u.Role == "admin"))
+        {
+            Console.WriteLine("ℹ️  Admin ya existe, bootstrap omitido");
+            return;
+        }
+
+        // Crear o promover el usuario admin
+        var existing = await db.Users.FirstOrDefaultAsync(u => u.Email == adminEmail);
+        if (existing != null)
+        {
+            existing.Role = "admin";
+            existing.UpdatedAt = DateTime.UtcNow;
+            await db.SaveChangesAsync();
+            Console.WriteLine($"✅ Usuario {adminEmail} promovido a admin");
+        }
+        else
+        {
+            var admin = new FinancialCopilot.Domain.Entities.User
+            {
+                Id = Guid.NewGuid(),
+                Name = "Admin",
+                Email = adminEmail,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(adminPassword, 12),
+                Role = "admin",
+                CreatedAt = DateTime.UtcNow
+            };
+            db.Users.Add(admin);
+            await db.SaveChangesAsync();
+            Console.WriteLine($"✅ Admin creado: {adminEmail}");
+        }
+
+        Console.WriteLine("⚠️  IMPORTANTE: Elimina ADMIN_EMAIL y ADMIN_PASSWORD de las env vars en Render ahora.");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"⚠ Bootstrap admin warning: {ex.Message}");
     }
 }
