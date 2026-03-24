@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+  # Base de datos PostgreSQL
   postgres:
     image: postgres:16
     container_name: financialcopilot-db
@@ -12,6 +13,57 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d financialcopilot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend .NET API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: financialcopilot-backend
+    ports:
+      - "5000:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=financialcopilot;Username=postgres;Password=postgres
+      - Jwt__Key=${JWT_KEY:-tu-secreto-super-seguro-de-al-menos-256-bits-para-desarrollo-local}
+      - Jwt__Issuer=FinancialCopilot
+      - Jwt__Audience=FinancialCopilotUsers
+      - AiEngine__Url=http://ai-engine:8000
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # AI Engine Python/FastAPI
+  ai-engine:
+    build:
+      context: ./ai-engine
+      dockerfile: Dockerfile
+    container_name: financialcopilot-ai
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+    restart: unless-stopped
+
+  # Frontend Next.js
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: financialcopilot-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:5000
+    depends_on:
+      - backend
+    restart: unless-stopped
 
 volumes:
   postgres_data:
