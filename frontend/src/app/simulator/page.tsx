@@ -505,19 +505,19 @@ export default function SimulatorPage() {
                                     <div>
                                         <p className="text-sm text-gray-600">Balance Final</p>
                                         <p className="text-2xl font-bold text-green-600">
-                                            {formatCOP(simulation.scenarios.optimistic?.finalBalance || simulation.scenarios[simulation.bestScenario]?.finalBalance || 0)}
+                                            {formatCOP(simulation.scenarios[simulation.bestScenario]?.finalBalance || 0)}
                                         </p>
                                     </div>
                                     <div>
                                         <p className="text-sm text-gray-600">Deuda Final</p>
                                         <p className="text-2xl font-bold text-green-600">
-                                            {formatCOP(simulation.scenarios.optimistic?.finalDebt || simulation.scenarios[simulation.bestScenario]?.finalDebt || 0)}
+                                            {formatCOP(simulation.scenarios[simulation.bestScenario]?.finalDebt || 0)}
                                         </p>
                                     </div>
                                     <div className="pt-3 border-t border-green-200">
                                         <p className="text-sm text-gray-600">Mejora Total</p>
                                         <p className="text-3xl font-black text-green-600">
-                                            {formatCOP((simulation.scenarios.optimistic?.finalBalance || simulation.scenarios[simulation.bestScenario]?.finalBalance || 0) - (simulation.scenarios.current?.finalBalance || 0))}
+                                            {formatCOP((simulation.scenarios[simulation.bestScenario]?.finalBalance || 0) - (simulation.scenarios.current?.finalBalance || 0))}
                                         </p>
                                     </div>
                                 </div>

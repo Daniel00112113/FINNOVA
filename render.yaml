@@ -36,15 +36,14 @@ services:
   # Frontend Next.js
   - type: web
     name: finnova-frontend
-    runtime: node
-    rootDir: frontend
-    buildCommand: npm ci && npm run build
-    startCommand: node .next/standalone/server.js
+    runtime: docker
+    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./frontend
     envVars:
       - key: NEXT_PUBLIC_API_URL
         value: https://finnova-backend.onrender.com/api
       - key: NODE_VERSION
-        value: 20
+        value: "20"
 
 databases:
   - name: finnova-db
