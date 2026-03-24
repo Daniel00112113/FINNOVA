@@ -13,6 +13,8 @@ public interface IApplicationDbContext
     DbSet<SpendingPattern> SpendingPatterns { get; }
     DbSet<UserProgress> UserProgress { get; }
     DbSet<Achievement> Achievements { get; }
+    DbSet<RefreshToken> RefreshTokens { get; }
+    DbSet<AuditLog> AuditLogs { get; }
     
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

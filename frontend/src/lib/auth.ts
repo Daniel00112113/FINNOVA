@@ -23,15 +23,14 @@ export const register = async (data: RegisterData): Promise<AuthResponse> => {
     const response = await api.post('/auth/register', data)
     const authData = response.data
 
-    // Guardar token y userId
     localStorage.setItem('token', authData.token)
+    localStorage.setItem('refreshToken', authData.refreshToken)
     localStorage.setItem('userId', authData.userId)
     localStorage.setItem('userName', authData.name)
     localStorage.setItem('userEmail', authData.email)
+    localStorage.setItem('userRole', authData.role || 'user')
 
-    // Configurar header de autorización para futuras requests
     api.defaults.headers.common['Authorization'] = `Bearer ${authData.token}`
-
     return authData
 }
 
@@ -40,24 +39,29 @@ export const login = async (data: LoginData): Promise<AuthResponse> => {
     const response = await api.post('/auth/login', data)
     const authData = response.data
 
-    // Guardar token y userId
     localStorage.setItem('token', authData.token)
+    localStorage.setItem('refreshToken', authData.refreshToken)
     localStorage.setItem('userId', authData.userId)
     localStorage.setItem('userName', authData.name)
     localStorage.setItem('userEmail', authData.email)
+    localStorage.setItem('userRole', authData.role || 'user')
 
-    // Configurar header de autorización
     api.defaults.headers.common['Authorization'] = `Bearer ${authData.token}`
-
     return authData
 }
 
 // Logout
 export const logout = () => {
+    const refreshToken = localStorage.getItem('refreshToken')
+    if (refreshToken) {
+        api.post('/auth/logout', { refreshToken }).catch(() => { })
+    }
     localStorage.removeItem('token')
+    localStorage.removeItem('refreshToken')
     localStorage.removeItem('userId')
     localStorage.removeItem('userName')
     localStorage.removeItem('userEmail')
+    localStorage.removeItem('userRole')
     delete api.defaults.headers.common['Authorization']
     window.location.href = '/auth/login'
 }

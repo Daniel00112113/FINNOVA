@@ -8,7 +8,6 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Text;
 using System.Threading.RateLimiting;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services
@@ -35,6 +34,7 @@ builder.Services.AddHttpClient<IAiService, AiService>(client =>
 });
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IGamificationService, GamificationService>();
+builder.Services.AddScoped<IAuditService, AuditService>();
 
 // JWT Authentication
 var jwtKey = builder.Configuration["Jwt:Key"] 
@@ -64,7 +64,11 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("admin"));
+    options.AddPolicy("AdminOrSupport", policy => policy.RequireRole("admin", "support"));
+});
 
 // CORS - Configuración dinámica según entorno
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()

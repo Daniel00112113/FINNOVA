@@ -10,6 +10,7 @@ export default function Navbar() {
     const router = useRouter()
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
     const userData = getUserData()
+    const isAdmin = typeof window !== 'undefined' && localStorage.getItem('userRole') === 'admin'
 
     const handleLogout = () => {
         logout()
@@ -44,6 +45,11 @@ export default function Navbar() {
                         <Link href="/simulator" className="text-transparent bg-gradient-to-r from-purple-600 via-pink-600 to-yellow-500 bg-clip-text hover:from-purple-700 hover:via-pink-700 hover:to-yellow-600 font-black transition">
                             ⏰ TIME MACHINE
                         </Link>
+                        {isAdmin && (
+                            <Link href="/admin" className="text-red-600 hover:text-red-700 font-bold transition">
+                                🛡️ Admin
+                            </Link>
+                        )}
                         <button
                             onClick={handleLogout}
                             className="text-red-600 hover:text-red-700 font-semibold transition"

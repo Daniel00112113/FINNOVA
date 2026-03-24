@@ -1,5 +1,6 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends, Security
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security.api_key import APIKeyHeader
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime, timedelta
@@ -11,6 +12,18 @@ import sys
 
 # Agregar path para training modules
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+# API Key security
+API_KEY = os.getenv("AI_ENGINE_API_KEY", "")
+api_key_header = APIKeyHeader(name="X-AI-Engine-Key", auto_error=False)
+
+def verify_api_key(key: str = Security(api_key_header)):
+    # Si no hay API_KEY configurada, solo permitir en desarrollo
+    if not API_KEY:
+        return True
+    if key != API_KEY:
+        raise HTTPException(status_code=403, detail="Invalid or missing API key")
+    return True
 
 # Intentar cargar Predictor Profesional (NUEVO)
 try:
@@ -96,7 +109,7 @@ def read_root():
     }
 
 @app.post("/predict/balance")
-def predict_balance(request: PredictionRequest):
+def predict_balance(request: PredictionRequest, _: bool = Depends(verify_api_key)):
     """Predice el balance futuro basado en historial de transacciones"""
     try:
         # Convertir transacciones a formato procesable
@@ -139,7 +152,7 @@ def predict_balance(request: PredictionRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/predict/expenses")
-def predict_expenses(request: PredictionRequest):
+def predict_expenses(request: PredictionRequest, _: bool = Depends(verify_api_key)):
     """Predice gastos futuros por categoría"""
     try:
         transactions_data = []
@@ -174,7 +187,7 @@ def predict_expenses(request: PredictionRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/simulate")
-def simulate_scenarios(request: SimulationRequest):
+def simulate_scenarios(request: SimulationRequest, _: bool = Depends(verify_api_key)):
     """Simula diferentes escenarios financieros"""
     try:
         result = simulator.simulate_financial_scenarios(
@@ -192,7 +205,7 @@ def simulate_scenarios(request: SimulationRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/analyze/risk")
-def analyze_risk(request: PredictionRequest):
+def analyze_risk(request: PredictionRequest, _: bool = Depends(verify_api_key)):
     """Analiza el riesgo financiero del usuario"""
     try:
         transactions_data = []

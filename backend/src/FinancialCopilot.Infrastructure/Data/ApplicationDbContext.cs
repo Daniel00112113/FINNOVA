@@ -18,6 +18,8 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<SpendingPattern> SpendingPatterns => Set<SpendingPattern>();
     public DbSet<UserProgress> UserProgress => Set<UserProgress>();
     public DbSet<Achievement> Achievements => Set<Achievement>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+    public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -128,6 +130,26 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
                 .WithMany()
                 .HasForeignKey(e => e.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<RefreshToken>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.Token).IsUnique();
+            entity.Property(e => e.Token).IsRequired().HasMaxLength(500);
+            entity.HasOne(e => e.User)
+                .WithMany(u => u.RefreshTokens)
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<AuditLog>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Action).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.Entity).IsRequired().HasMaxLength(100);
+            entity.HasIndex(e => e.UserId);
+            entity.HasIndex(e => e.CreatedAt);
         });
     }
 }

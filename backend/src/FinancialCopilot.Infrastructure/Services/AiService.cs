@@ -19,6 +19,10 @@ public class AiService : IAiService
         _context = context;
         _httpClient = httpClient;
         _aiEngineUrl = configuration["AiEngine:Url"] ?? "http://localhost:8000";
+
+        var apiKey = configuration["AiEngine:ApiKey"];
+        if (!string.IsNullOrEmpty(apiKey))
+            _httpClient.DefaultRequestHeaders.Add("X-AI-Engine-Key", apiKey);
     }
 
     public async Task<BalancePredictionDto> PredictBalanceAsync(Guid userId, int monthsAhead = 3)
