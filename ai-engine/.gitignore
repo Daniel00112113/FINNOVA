@@ -1,8 +1,9 @@
-# Modelos entrenados (archivos grandes)
+# Modelos entrenados (archivos grandes - binarios)
 models/professional/*.pkl
-models/professional/*.json
+models/professional/*.joblib
 *.pkl
 *.joblib
+# metadata.json SI se incluye en git (es solo texto, necesario para el predictor)
 
 # Python
 __pycache__/
