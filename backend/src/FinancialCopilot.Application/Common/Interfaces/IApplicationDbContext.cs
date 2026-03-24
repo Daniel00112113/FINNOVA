@@ -11,6 +11,8 @@ public interface IApplicationDbContext
     DbSet<Debt> Debts { get; }
     DbSet<Alert> Alerts { get; }
     DbSet<SpendingPattern> SpendingPatterns { get; }
+    DbSet<UserProgress> UserProgress { get; }
+    DbSet<Achievement> Achievements { get; }
     
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

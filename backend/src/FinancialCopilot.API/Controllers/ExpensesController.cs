@@ -13,10 +13,12 @@ namespace FinancialCopilot.API.Controllers;
 public class ExpensesController : ControllerBase
 {
     private readonly IApplicationDbContext _context;
+    private readonly IGamificationService _gamificationService;
 
-    public ExpensesController(IApplicationDbContext context)
+    public ExpensesController(IApplicationDbContext context, IGamificationService gamificationService)
     {
         _context = context;
+        _gamificationService = gamificationService;
     }
 
     [HttpPost]
@@ -45,6 +47,9 @@ public class ExpensesController : ControllerBase
 
             _context.Expenses.Add(expense);
             await _context.SaveChangesAsync();
+
+            // Award points for logging expense
+            await _gamificationService.AddPointsAsync(userId, 10, "expense_logged", "Gasto registrado 📝");
 
             return CreatedAtAction(nameof(GetById), new { userId, id = expense.Id },
                 new ExpenseDto(

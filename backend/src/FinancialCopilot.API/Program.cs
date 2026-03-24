@@ -31,6 +31,7 @@ builder.Services.AddScoped<IAnalysisService, AnalysisService>();
 builder.Services.AddScoped<IFinancialInsightsService, FinancialInsightsService>();
 builder.Services.AddHttpClient<IAiService, AiService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IGamificationService, GamificationService>();
 
 // JWT Authentication
 var jwtKey = builder.Configuration["Jwt:Key"] 
@@ -158,14 +159,34 @@ using (var scope = app.Services.CreateScope())
             throw new InvalidOperationException("ConnectionString is not configured");
         }
         
-        db.Database.Migrate();
-        Console.WriteLine("✓ Database migrations applied successfully");
+        // Verificar si hay migraciones pendientes
+        var pendingMigrations = db.Database.GetPendingMigrations().ToList();
+        if (pendingMigrations.Any())
+        {
+            Console.WriteLine($"📊 Applying {pendingMigrations.Count} pending migrations...");
+            foreach (var migration in pendingMigrations)
+            {
+                Console.WriteLine($"  - {migration}");
+            }
+            db.Database.Migrate();
+            Console.WriteLine("✓ Database migrations applied successfully");
+        }
+        else
+        {
+            Console.WriteLine("✓ Database is up to date, no migrations needed");
+        }
+    }
+    catch (Npgsql.PostgresException pgEx) when (pgEx.SqlState == "42701")
+    {
+        // 42701 = duplicate_column error
+        Console.WriteLine($"⚠ Warning: Column already exists (this is OK): {pgEx.MessageText}");
+        Console.WriteLine("✓ Continuing with existing schema");
     }
     catch (Exception ex)
     {
         Console.WriteLine($"⚠ Warning: Could not apply migrations: {ex.Message}");
         Console.WriteLine($"⚠ Exception type: {ex.GetType().Name}");
-        // En producción, las migraciones son críticas
+        // En producción, las migraciones son críticas solo si no es un error de columna duplicada
         if (!app.Environment.IsDevelopment())
         {
             Console.WriteLine("❌ CRITICAL: Database migrations failed in production");

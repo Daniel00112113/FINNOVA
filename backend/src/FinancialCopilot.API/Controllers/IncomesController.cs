@@ -13,10 +13,12 @@ namespace FinancialCopilot.API.Controllers;
 public class IncomesController : ControllerBase
 {
     private readonly IApplicationDbContext _context;
+    private readonly IGamificationService _gamificationService;
 
-    public IncomesController(IApplicationDbContext context)
+    public IncomesController(IApplicationDbContext context, IGamificationService gamificationService)
     {
         _context = context;
+        _gamificationService = gamificationService;
     }
 
     [HttpPost]
@@ -41,6 +43,9 @@ public class IncomesController : ControllerBase
 
             _context.Incomes.Add(income);
             await _context.SaveChangesAsync();
+
+            // Gamificación: Otorgar puntos por registrar ingreso
+            await _gamificationService.AddPointsAsync(userId, 15, "income_created", "Ingreso registrado");
 
             return CreatedAtAction(nameof(GetById), new { userId, id = income.Id },
                 new IncomeDto(income.Id, income.Amount, income.Date, income.Type, income.Description));
@@ -77,4 +82,5 @@ public class IncomesController : ControllerBase
         return new IncomeDto(income.Id, income.Amount, income.Date, income.Type, income.Description);
     }
 }
+
 

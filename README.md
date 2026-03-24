@@ -9,6 +9,14 @@ Sistema inteligente de gestión financiera personal con IA profesional.
 
 ## 🚀 Características
 
+### 🎮 Gamificación (NUEVO!)
+- **Sistema de puntos** por cada acción
+- **Niveles progresivos** (cada 1000 puntos)
+- **Rachas diarias** para mantener el hábito
+- **5 logros desbloqueables** automáticamente
+- **Widget integrado** en dashboard
+- **Notificaciones animadas** de logros
+
 ### 💡 Inteligencia Artificial Profesional
 - **Modelo ML entrenado** con 145,814 transacciones reales
 - **Predicciones precisas** de gastos futuros (R² = 1.000)
@@ -71,12 +79,41 @@ Sistema inteligente de gestión financiera personal con IA profesional.
 
 ## 📦 Instalación
 
-### Requisitos Previos
+### ⚡ Inicio Rápido (Recomendado)
+
+```powershell
+# 1. Aplicar gamificación (solo primera vez)
+.\aplicar-gamificacion.ps1
+
+# 2. Iniciar todo con Docker
+.\start-all.ps1
+
+# 3. Abrir navegador
+# http://localhost:3000
+```
+
+**¡Listo en 3 comandos!** 🎉
+
+Ver [INICIO_RAPIDO.md](INICIO_RAPIDO.md) para más detalles.
+
+---
+
+### 📋 Requisitos Previos
+- Docker Desktop
 - Node.js 20+
 - .NET 10 SDK
 - Python 3.11+
-- PostgreSQL 15+
-- Docker (opcional)
+
+### 🐳 Con Docker (Recomendado)
+
+El script `start-all.ps1` hace todo automáticamente:
+- ✅ Verifica Docker
+- ✅ Crea PostgreSQL en contenedor
+- ✅ Aplica migraciones
+- ✅ Aplica gamificación
+- ✅ Inicia Backend, AI Engine y Frontend
+
+### 🔧 Manual (Avanzado)
 
 ### 1. Clonar Repositorio
 ```bash

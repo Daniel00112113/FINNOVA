@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react'
 import { api } from '@/lib/api'
 import ProtectedRoute from '@/components/ProtectedRoute'
 import Link from 'next/link'
+import GamificationWidget from '@/components/gamification/GamificationWidget'
+import AchievementToast from '@/components/gamification/AchievementToast'
 
 const formatCOP = (amount: number) => {
     return new Intl.NumberFormat('es-CO', {
@@ -54,6 +56,7 @@ export default function Dashboard() {
     const [dailyBudget, setDailyBudget] = useState<DailyBudget | null>(null)
     const [userId, setUserId] = useState<string>('')
     const [showAllAlerts, setShowAllAlerts] = useState(false)
+    const [newAchievement, setNewAchievement] = useState<any>(null)
 
     useEffect(() => {
         const id = localStorage.getItem('userId')
@@ -116,11 +119,21 @@ export default function Dashboard() {
 
     return (
         <ProtectedRoute>
+            <AchievementToast
+                achievement={newAchievement}
+                onClose={() => setNewAchievement(null)}
+            />
+
             <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-3 sm:p-4 md:p-8">
                 <div className="w-full max-w-7xl mx-auto">
                     <div className="mb-6 md:mb-8">
                         <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">💼 Dashboard Financiero</h1>
                         <p className="text-sm sm:text-base text-gray-600 mt-1 md:mt-2">Resumen de tu situación financiera</p>
+                    </div>
+
+                    {/* GAMIFICACIÓN WIDGET */}
+                    <div className="mb-6 md:mb-8">
+                        <GamificationWidget />
                     </div>
 
                     {/* ALERTAS PRIORITARIAS */}
@@ -142,8 +155,8 @@ export default function Dashboard() {
                                     <div
                                         key={index}
                                         className={`rounded-lg sm:rounded-xl p-4 sm:p-5 border-2 ${alert.severity === 'Critical'
-                                                ? 'bg-red-50 border-red-300'
-                                                : 'bg-yellow-50 border-yellow-300'
+                                            ? 'bg-red-50 border-red-300'
+                                            : 'bg-yellow-50 border-yellow-300'
                                             }`}
                                     >
                                         <div className="flex items-start gap-3 sm:gap-4">
@@ -155,8 +168,8 @@ export default function Dashboard() {
                                                     <Link
                                                         href={alert.actionUrl}
                                                         className={`inline-block px-3 sm:px-4 py-2 rounded-lg text-sm font-medium ${alert.severity === 'Critical'
-                                                                ? 'bg-red-600 text-white hover:bg-red-700'
-                                                                : 'bg-yellow-600 text-white hover:bg-yellow-700'
+                                                            ? 'bg-red-600 text-white hover:bg-red-700'
+                                                            : 'bg-yellow-600 text-white hover:bg-yellow-700'
                                                             }`}
                                                     >
                                                         {alert.actionLabel}

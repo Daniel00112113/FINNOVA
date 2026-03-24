@@ -16,6 +16,8 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<Debt> Debts => Set<Debt>();
     public DbSet<Alert> Alerts => Set<Alert>();
     public DbSet<SpendingPattern> SpendingPatterns => Set<SpendingPattern>();
+    public DbSet<UserProgress> UserProgress => Set<UserProgress>();
+    public DbSet<Achievement> Achievements => Set<Achievement>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -85,6 +87,43 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
             entity.Property(e => e.AverageMonthly).HasPrecision(18, 2);
             entity.Property(e => e.CurrentMonth).HasPrecision(18, 2);
             entity.Property(e => e.PercentageChange).HasPrecision(5, 2);
+            entity.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<UserProgress>(entity =>
+        {
+            entity.ToTable("user_progress");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+            entity.Property(e => e.Points).HasColumnName("points");
+            entity.Property(e => e.Level).HasColumnName("level");
+            entity.Property(e => e.CurrentStreak).HasColumnName("current_streak");
+            entity.Property(e => e.LongestStreak).HasColumnName("longest_streak");
+            entity.Property(e => e.LastActivityDate).HasColumnName("last_activity_date");
+            entity.Property(e => e.TotalLogins).HasColumnName("total_logins");
+            entity.Property(e => e.CreatedAt).HasColumnName("created_at");
+            entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
+            entity.HasIndex(e => e.UserId).IsUnique();
+            entity.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Achievement>(entity =>
+        {
+            entity.ToTable("achievements");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+            entity.Property(e => e.Type).IsRequired().HasMaxLength(100).HasColumnName("type");
+            entity.Property(e => e.PointsEarned).HasColumnName("points_earned");
+            entity.Property(e => e.Description).HasColumnName("description");
+            entity.Property(e => e.CreatedAt).HasColumnName("created_at");
             entity.HasOne(e => e.User)
                 .WithMany()
                 .HasForeignKey(e => e.UserId)

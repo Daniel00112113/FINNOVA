@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { api } from '@/lib/api'
 import ProtectedRoute from '@/components/ProtectedRoute'
+import { useGamification } from '@/components/gamification/GamificationProvider'
 
 const formatCOP = (amount: number) => {
     return new Intl.NumberFormat('es-CO', {
@@ -28,6 +29,7 @@ interface Transaction {
 }
 
 export default function TransactionsPage() {
+    const { showAchievement, triggerUpdate } = useGamification();
     const [userId, setUserId] = useState<string>('')
     const [showForm, setShowForm] = useState<'income' | 'expense' | null>(null)
     const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -110,6 +112,14 @@ export default function TransactionsPage() {
                     date: formData.date,
                     description: formData.description
                 })
+
+                // Mostrar logro de gamificación
+                showAchievement({
+                    title: '💰 Ingreso Registrado',
+                    description: 'Has ganado 15 puntos',
+                    icon: '💰',
+                    pointsEarned: 15
+                });
             } else {
                 await api.post(`/users/${userId}/expenses`, {
                     amount: parseFloat(formData.amount),
@@ -121,7 +131,18 @@ export default function TransactionsPage() {
                     recurrenceType: formData.isRecurring ? formData.recurrenceType : null,
                     tags: formData.tags
                 })
+
+                // Mostrar logro de gamificación
+                showAchievement({
+                    title: '📝 Gasto Registrado',
+                    description: 'Has ganado 10 puntos',
+                    icon: '📝',
+                    pointsEarned: 10
+                });
             }
+
+            // Actualizar widget flotante
+            triggerUpdate();
 
             alert('Transacción registrada exitosamente')
             setShowForm(null)

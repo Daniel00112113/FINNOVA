@@ -1,5 +1,6 @@
 ﻿import type { Metadata } from 'next'
 import './globals.css'
+import ClientGamification from '@/components/gamification/ClientGamification'
 
 export const metadata: Metadata = {
     title: 'FINNOVA - Tu Copiloto Financiero',
@@ -13,7 +14,11 @@ export default function RootLayout({
 }) {
     return (
         <html lang="es">
-            <body>{children}</body>
+            <body>
+                <ClientGamification>
+                    {children}
+                </ClientGamification>
+            </body>
         </html>
     )
 }
