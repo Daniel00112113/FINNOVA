@@ -485,6 +485,25 @@ export default function AdminPage() {
                             className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm">
                             🔄 Actualizar estado
                         </button>
+                        <button onClick={async () => {
+                            try {
+                                const r = await api.get('/admin/email-status')
+                                const d = r.data
+                                notify(`Email: user=${d.smtpUser} | pwd=${d.passwordHint} | configured=${d.isConfigured}`)
+                            } catch { notify('Error al obtener estado del email') }
+                        }} className="px-4 py-2 bg-blue-800 hover:bg-blue-700 rounded-lg text-sm">
+                            📧 Diagnóstico Email
+                        </button>
+                        <button onClick={async () => {
+                            const email = prompt('Email de destino para la prueba:')
+                            if (!email) return
+                            try {
+                                const r = await api.post('/admin/email-test', { toEmail: email })
+                                notify(r.data.message)
+                            } catch (e: any) { notify(e.response?.data?.error || 'Error enviando email') }
+                        }} className="px-4 py-2 bg-emerald-800 hover:bg-emerald-700 rounded-lg text-sm">
+                            ✉️ Enviar Email de Prueba
+                        </button>
                     </div>
                 )}
 

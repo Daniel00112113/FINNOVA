@@ -147,7 +147,11 @@ public class EmailService : IEmailService
 
     private async Task SendAsync(string toEmail, string toName, string subject, string htmlBody)
     {
-        if (!await IsConfiguredAsync())
+        var configured = await IsConfiguredAsync();
+        _logger.LogInformation("Email config check — SmtpUser: '{User}', HasPassword: {HasPwd}, Configured: {Cfg}",
+            SmtpUser, !string.IsNullOrEmpty(SmtpPassword), configured);
+
+        if (!configured)
         {
             _logger.LogWarning("Email service not configured — skipping send to {Email}", toEmail);
             return;
@@ -161,18 +165,19 @@ public class EmailService : IEmailService
             message.Subject = subject;
             message.Body = new BodyBuilder { HtmlBody = htmlBody }.ToMessageBody();
 
+            _logger.LogInformation("Connecting to SMTP {Host}:{Port}", SmtpHost, SmtpPort);
+
             using var client = new SmtpClient();
             await client.ConnectAsync(SmtpHost, SmtpPort, SecureSocketOptions.StartTls);
             await client.AuthenticateAsync(SmtpUser, SmtpPassword);
             await client.SendAsync(message);
             await client.DisconnectAsync(true);
 
-            _logger.LogInformation("Email sent to {Email}: {Subject}", toEmail, subject);
+            _logger.LogInformation("✅ Email sent to {Email}: {Subject}", toEmail, subject);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to send email to {Email}", toEmail);
-            // No lanzar — el email es best-effort, no debe romper el flujo
+            _logger.LogError(ex, "❌ Failed to send email to {Email} — {Error}", toEmail, ex.Message);
         }
     }
 }

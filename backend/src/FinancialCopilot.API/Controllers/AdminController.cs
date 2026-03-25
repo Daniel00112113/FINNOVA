@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FinancialCopilot.Application.Common.Interfaces;
+using FinancialCopilot.Infrastructure.Services;
+using Microsoft.Extensions.Configuration;
 using System.Text;
 
 namespace FinancialCopilot.API.Controllers;
@@ -12,10 +14,14 @@ namespace FinancialCopilot.API.Controllers;
 public class AdminController : ControllerBase
 {
     private readonly IApplicationDbContext _context;
+    private readonly IEmailService _emailService;
+    private readonly IConfiguration _config;
 
-    public AdminController(IApplicationDbContext context)
+    public AdminController(IApplicationDbContext context, IEmailService emailService, IConfiguration config)
     {
         _context = context;
+        _emailService = emailService;
+        _config = config;
     }
 
     // ─── STATS PÚBLICAS (sin auth) ──────────────────────────────────────────────
@@ -34,6 +40,45 @@ public class AdminController : ControllerBase
           totalUsers,
           totalTransactions,
       });
+  }
+
+  // ─── DIAGNÓSTICO Y TEST DE EMAIL ─────────────────────────────────────────
+
+  [HttpGet("email-status")]
+  [Authorize(Roles = "admin")]
+  public IActionResult GetEmailStatus()
+  {
+      // Mostrar qué valores está leyendo (sin exponer la contraseña completa)
+      var user   = _config["Email:SmtpUser"] ?? "(vacío)";
+      var pwd    = _config["Email:SmtpPassword"];
+      var host   = _config["Email:SmtpHost"] ?? "(vacío)";
+      var port   = _config["Email:SmtpPort"] ?? "(vacío)";
+
+      return Ok(new
+      {
+          smtpHost     = host,
+          smtpPort     = port,
+          smtpUser     = user,
+          hasPassword  = !string.IsNullOrEmpty(pwd),
+          passwordHint = string.IsNullOrEmpty(pwd) ? "(no configurada)" : $"{pwd[..Math.Min(4, pwd.Length)]}****",
+          isConfigured = !string.IsNullOrEmpty(user) && !string.IsNullOrEmpty(pwd),
+          note         = "Si isConfigured=false, verifica que las env vars en Render usen Email__SmtpUser (doble guión bajo)"
+      });
+  }
+
+  [HttpPost("email-test")]
+  [Authorize(Roles = "admin")]
+  public async Task<IActionResult> TestEmail([FromBody] TestEmailDto dto)
+  {
+      try
+      {
+          await _emailService.SendWelcomeAsync(dto.ToEmail, "Admin Test");
+          return Ok(new { message = $"Email de prueba enviado a {dto.ToEmail}. Revisa los logs de Render para ver si hubo error." });
+      }
+      catch (Exception ex)
+      {
+          return BadRequest(new { error = ex.Message });
+      }
   }
 
   // ─── MÉTRICAS ────────────────────────────────────────────────────────────
@@ -441,3 +486,4 @@ public class AdminController : ControllerBase
 
 public record UpdateRoleDto(string Role);
 public record BroadcastDto(string Message, string? Details, string? Severity);
+public record TestEmailDto(string ToEmail);
