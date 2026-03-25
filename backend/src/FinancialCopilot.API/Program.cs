@@ -35,6 +35,7 @@ builder.Services.AddHttpClient<IAiService, AiService>(client =>
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IGamificationService, GamificationService>();
 builder.Services.AddScoped<IAuditService, AuditService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 // JWT Authentication
 var jwtKey = builder.Configuration["Jwt:Key"] 

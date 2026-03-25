@@ -13,17 +13,20 @@ public class AuthController : ControllerBase
     private readonly IApplicationDbContext _context;
     private readonly IAuthService _authService;
     private readonly IAuditService _auditService;
+    private readonly IEmailService _emailService;
     private readonly ILogger<AuthController> _logger;
 
     public AuthController(
         IApplicationDbContext context,
         IAuthService authService,
         IAuditService auditService,
+        IEmailService emailService,
         ILogger<AuthController> logger)
     {
         _context = context;
         _authService = authService;
         _auditService = auditService;
+        _emailService = emailService;
         _logger = logger;
     }
 
@@ -57,6 +60,9 @@ public class AuthController : ControllerBase
             var refreshToken = await CreateRefreshToken(user.Id, ip);
 
             await _auditService.LogAsync("register", "User", user.Id, user.Id.ToString(), ip);
+
+            // Email de bienvenida (fire-and-forget)
+            _ = _emailService.SendWelcomeAsync(user.Email, user.Name);
 
             return Ok(new { token, refreshToken = refreshToken.Token, userId = user.Id, name = user.Name, email = user.Email, role = user.Role });
         }
@@ -108,6 +114,9 @@ public class AuthController : ControllerBase
             var refreshToken = await CreateRefreshToken(user.Id, ip);
 
             await _auditService.LogAsync("login", "User", user.Id, user.Id.ToString(), ip, ua);
+
+            // Notificación de login (fire-and-forget)
+            _ = _emailService.SendLoginNotificationAsync(user.Email, user.Name, ip ?? "desconocida");
 
             return Ok(new { token, refreshToken = refreshToken.Token, userId = user.Id, name = user.Name, email = user.Email, role = user.Role });
         }

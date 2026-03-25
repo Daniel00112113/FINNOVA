@@ -24,6 +24,18 @@ services:
         value: https://finnova-ai-engine.onrender.com
       - key: AiEngine__ApiKey
         generateValue: true
+      - key: Email__SmtpHost
+        value: smtp.gmail.com
+      - key: Email__SmtpPort
+        value: "587"
+      - key: Email__SmtpUser
+        value: ctslabscartagena@gmail.com
+      - key: Email__SmtpPassword
+        value: ""
+      - key: Email__FromName
+        value: FINNOVA
+      - key: Email__FromEmail
+        value: ctslabscartagena@gmail.com
       - key: AdminBootstrap__Email
         value: ""
       - key: AdminBootstrap__Password
