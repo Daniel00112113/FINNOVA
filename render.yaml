@@ -21,7 +21,7 @@ services:
       - key: Jwt__Audience
         value: FinancialCopilotUsers
       - key: AiEngine__Url
-        value: https://finnova-ai-engine.onrender.com
+        value: https://finnova-ai.onrender.com
       - key: AiEngine__ApiKey
         generateValue: true
       - key: Email__SmtpHost
@@ -31,15 +31,15 @@ services:
       - key: Email__SmtpUser
         value: ctslabscartagena@gmail.com
       - key: Email__SmtpPassword
-        value: ""
+        value: vxwjofchoiicrqeh
       - key: Email__FromName
         value: FINNOVA
       - key: Email__FromEmail
         value: ctslabscartagena@gmail.com
       - key: AdminBootstrap__Email
-        value: ""
+        value: ctslabscartagena@gmail.com
       - key: AdminBootstrap__Password
-        value: ""
+        value: Finnova2026!
 
   # AI Engine Python
   - type: web
@@ -64,10 +64,10 @@ services:
     dockerContext: ./frontend
     buildArgs:
       - key: NEXT_PUBLIC_API_URL
-        value: https://finnova-backend-hquh.onrender.com/api
+        value: https://finnova-backend.onrender.com/api
     envVars:
       - key: NEXT_PUBLIC_API_URL
-        value: https://finnova-backend-hquh.onrender.com/api
+        value: https://finnova-backend.onrender.com/api
       - key: NODE_VERSION
         value: "20"
 
