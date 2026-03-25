@@ -53,6 +53,7 @@ public class AdminController : ControllerBase
       var pwd    = _config["Email:SmtpPassword"];
       var host   = _config["Email:SmtpHost"] ?? "(vacío)";
       var port   = _config["Email:SmtpPort"] ?? "(vacío)";
+      var aiUrl  = _config["AiEngine:Url"] ?? "(vacío — verifica AiEngine__Url en Render)";
 
       return Ok(new
       {
@@ -62,6 +63,7 @@ public class AdminController : ControllerBase
           hasPassword  = !string.IsNullOrEmpty(pwd),
           passwordHint = string.IsNullOrEmpty(pwd) ? "(no configurada)" : $"{pwd[..Math.Min(4, pwd.Length)]}****",
           isConfigured = !string.IsNullOrEmpty(user) && !string.IsNullOrEmpty(pwd),
+          aiEngineUrl  = aiUrl,
           note         = "Si isConfigured=false, verifica que las env vars en Render usen Email__SmtpUser (doble guión bajo)"
       });
   }
