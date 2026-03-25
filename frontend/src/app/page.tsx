@@ -404,26 +404,50 @@ export default function LandingPage() {
                                 <Logo width={36} height={36} />
                                 <span className="text-xl font-black shimmer-text">FINNOVA</span>
                             </div>
-                            <p className="text-gray-500 text-sm leading-relaxed">Tu copiloto financiero impulsado por inteligencia artificial.</p>
+                            <p className="text-gray-500 text-sm leading-relaxed mb-3">Tu copiloto financiero impulsado por inteligencia artificial.</p>
+                            <a href="mailto:ctslabscartagena@gmail.com"
+                                className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 text-xs font-medium transition-colors">
+                                <span>✉️</span> ctslabscartagena@gmail.com
+                            </a>
                         </div>
-                        {[
-                            { title: 'Producto', links: ['Características', 'Precios', 'Demo'] },
-                            { title: 'Empresa', links: ['Sobre Nosotros', 'Blog', 'Contacto'] },
-                            { title: 'Legal', links: ['Privacidad', 'Términos', 'Seguridad'] },
-                        ].map(col => (
-                            <div key={col.title}>
-                                <h4 className="font-bold text-white text-sm mb-4">{col.title}</h4>
-                                <ul className="space-y-2">
-                                    {col.links.map(l => (
-                                        <li key={l}><a href="#" className="text-gray-500 hover:text-emerald-400 text-sm transition-colors">{l}</a></li>
-                                    ))}
-                                </ul>
-                            </div>
-                        ))}
+                        <div>
+                            <h4 className="font-bold text-white text-sm mb-4">Producto</h4>
+                            <ul className="space-y-2">
+                                <li><a href="#features" className="text-gray-500 hover:text-emerald-400 text-sm transition-colors">Características</a></li>
+                                <li><a href="#how" className="text-gray-500 hover:text-emerald-400 text-sm transition-colors">Cómo funciona</a></li>
+                                <li><a href="#testimonials" className="text-gray-500 hover:text-emerald-400 text-sm transition-colors">Testimonios</a></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 className="font-bold text-white text-sm mb-4">Empresa</h4>
+                            <ul className="space-y-2">
+                                <li><span className="text-gray-500 text-sm">CTS Labs Cartagena</span></li>
+                                <li>
+                                    <a href="mailto:ctslabscartagena@gmail.com"
+                                        className="text-gray-500 hover:text-emerald-400 text-sm transition-colors">
+                                        Contacto
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="mailto:ctslabscartagena@gmail.com"
+                                        className="text-gray-500 hover:text-emerald-400 text-sm transition-colors">
+                                        Soporte
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 className="font-bold text-white text-sm mb-4">Legal</h4>
+                            <ul className="space-y-2">
+                                <li><a href="#" className="text-gray-500 hover:text-emerald-400 text-sm transition-colors">Privacidad</a></li>
+                                <li><a href="#" className="text-gray-500 hover:text-emerald-400 text-sm transition-colors">Términos</a></li>
+                                <li><a href="#" className="text-gray-500 hover:text-emerald-400 text-sm transition-colors">Seguridad</a></li>
+                            </ul>
+                        </div>
                     </div>
                     <div className="border-t pt-8 flex flex-col md:flex-row justify-between items-center gap-4"
                         style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
-                        <p className="text-gray-600 text-sm">© 2026 FINNOVA. Todos los derechos reservados. Hecho con pasión en Colombia 🇨🇴</p>
+                        <p className="text-gray-600 text-sm">© 2026 FINNOVA by CTS Labs Cartagena. Todos los derechos reservados. Hecho con pasión en Colombia 🇨🇴</p>
                         <div className="flex items-center gap-2">
                             <span className="w-2 h-2 rounded-full bg-emerald-400" style={{ animation: 'glow 1.5s infinite' }} />
                             <span className="text-gray-600 text-xs">Todos los sistemas operativos</span>
