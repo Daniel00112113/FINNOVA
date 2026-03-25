@@ -26,7 +26,7 @@ interface AuditLog {
 
 interface AdminUser {
     id: string; name: string; email: string; role: string
-    lastLoginAt: string | null; failedLoginAttempts: number; isLocked: boolean
+    createdAt: string; lastLoginAt: string | null; failedLoginAttempts: number; isLocked: boolean
     lockedUntil: string | null; transactionCount: number
 }
 
