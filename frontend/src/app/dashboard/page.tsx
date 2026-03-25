@@ -6,6 +6,7 @@ import ProtectedRoute from '@/components/ProtectedRoute'
 import Link from 'next/link'
 import GamificationWidget from '@/components/gamification/GamificationWidget'
 import AchievementToast from '@/components/gamification/AchievementToast'
+import { useAppTour } from '@/components/AppTour'
 
 const formatCOP = (amount: number) => {
     return new Intl.NumberFormat('es-CO', {
@@ -54,6 +55,7 @@ export default function Dashboard() {
     const [data, setData] = useState<DashboardData | null>(null)
     const [alerts, setAlerts] = useState<Alerts | null>(null)
     const [dailyBudget, setDailyBudget] = useState<DailyBudget | null>(null)
+    const { startTour } = useAppTour()
     const [userId, setUserId] = useState<string>('')
     const [showAllAlerts, setShowAllAlerts] = useState(false)
     const [newAchievement, setNewAchievement] = useState<any>(null)
@@ -65,6 +67,12 @@ export default function Dashboard() {
             loadDashboard(id)
             loadAlerts(id)
             loadDailyBudget(id)
+        }
+
+        // Lanzar tour si viene del onboarding
+        if (localStorage.getItem('startTour') === 'true') {
+            localStorage.removeItem('startTour')
+            setTimeout(() => startTour(), 1200) // esperar que cargue el DOM
         }
     }, [])
 
@@ -126,13 +134,13 @@ export default function Dashboard() {
 
             <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-3 sm:p-4 md:p-8">
                 <div className="w-full max-w-7xl mx-auto">
-                    <div className="mb-6 md:mb-8">
+                    <div className="mb-6 md:mb-8" id="dashboard-title">
                         <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">💼 Dashboard Financiero</h1>
                         <p className="text-sm sm:text-base text-gray-600 mt-1 md:mt-2">Resumen de tu situación financiera</p>
                     </div>
 
                     {/* GAMIFICACIÓN WIDGET */}
-                    <div className="mb-6 md:mb-8">
+                    <div className="mb-6 md:mb-8" id="gamification-widget">
                         <GamificationWidget />
                     </div>
 
@@ -185,7 +193,7 @@ export default function Dashboard() {
 
                     {/* PRESUPUESTO DIARIO */}
                     {dailyBudget && (
-                        <div className="mb-6 md:mb-8">
+                        <div className="mb-6 md:mb-8" id="daily-budget">
                             <div className={`bg-gradient-to-br ${getStatusColor(dailyBudget.status)} p-6 sm:p-8 rounded-xl shadow-lg text-white`}>
                                 <div className="text-center">
                                     <p className="text-xs sm:text-sm font-medium mb-2 opacity-90">HOY PUEDES GASTAR</p>
@@ -254,7 +262,7 @@ export default function Dashboard() {
                     </div>
 
                     {/* ACCIONES RÁPIDAS */}
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6 md:mb-8">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6 md:mb-8" id="quick-actions">
                         <Link
                             href="/transactions"
                             className="bg-white p-4 sm:p-5 rounded-lg shadow hover:shadow-lg transition text-center"

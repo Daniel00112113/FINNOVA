@@ -33,16 +33,19 @@ export default function Navbar() {
                         <Link href="/dashboard" className="text-gray-700 hover:text-emerald-600 font-medium transition">
                             Dashboard
                         </Link>
-                        <Link href="/transactions" className="text-gray-700 hover:text-emerald-600 font-medium transition">
+                        <Link href="/transactions" className="text-gray-700 hover:text-emerald-600 font-medium transition" id="nav-transactions">
                             Transacciones
                         </Link>
                         <Link href="/insights" className="text-gray-700 hover:text-emerald-600 font-medium transition">
                             Insights
                         </Link>
-                        <Link href="/analysis" className="text-gray-700 hover:text-emerald-600 font-medium transition">
+                        <Link href="/predictions" className="text-gray-700 hover:text-emerald-600 font-medium transition" id="nav-predictions">
+                            Predicciones
+                        </Link>
+                        <Link href="/analysis" className="text-gray-700 hover:text-emerald-600 font-medium transition" id="nav-analysis">
                             Análisis
                         </Link>
-                        <Link href="/simulator" className="text-transparent bg-gradient-to-r from-purple-600 via-pink-600 to-yellow-500 bg-clip-text hover:from-purple-700 hover:via-pink-700 hover:to-yellow-600 font-black transition">
+                        <Link href="/simulator" className="text-transparent bg-gradient-to-r from-purple-600 via-pink-600 to-yellow-500 bg-clip-text hover:from-purple-700 hover:via-pink-700 hover:to-yellow-600 font-black transition" id="nav-simulator">
                             ⏰ TIME MACHINE
                         </Link>
                         {isAdmin && (

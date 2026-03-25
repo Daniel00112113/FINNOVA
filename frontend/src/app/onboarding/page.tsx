@@ -2,365 +2,296 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Logo from '@/components/Logo'
+
+const steps = [
+    {
+        icon: '🎉',
+        title: 'Bienvenido a FINNOVA',
+        subtitle: 'Tu copiloto financiero impulsado por IA',
+        features: [
+            { icon: '📊', label: 'Analiza tus finanzas', desc: 'Identifica patrones automáticamente' },
+            { icon: '🔮', label: 'Predice tu futuro', desc: 'Proyecciones precisas con IA' },
+            { icon: '🎯', label: 'Simula escenarios', desc: 'Decide antes de actuar' },
+            { icon: '🏆', label: 'Gana logros', desc: 'Gamificación financiera' },
+        ]
+    },
+    {
+        icon: '💳',
+        title: 'Registra tus Transacciones',
+        subtitle: 'La base de todo — ingresos y gastos',
+        demo: 'transactions'
+    },
+    {
+        icon: '🔮',
+        title: 'Predicciones con IA',
+        subtitle: 'La IA aprende de tus patrones',
+        demo: 'predictions'
+    },
+    {
+        icon: '🎯',
+        title: 'Simulador de Escenarios',
+        subtitle: 'Compara 5 futuros posibles',
+        demo: 'simulator'
+    },
+    {
+        icon: '🚀',
+        title: '¡Todo Listo!',
+        subtitle: 'Ahora te mostramos un tour del dashboard',
+        final: true
+    },
+]
 
 export default function OnboardingPage() {
     const router = useRouter()
-    const [currentStep, setCurrentStep] = useState(0)
-    const [userName, setUserName] = useState('')
+    const [step, setStep] = useState(0)
+    const [userName, setUserName] = useState('Usuario')
+    const [animating, setAnimating] = useState(false)
 
     useEffect(() => {
         const name = localStorage.getItem('userName') || 'Usuario'
-        setUserName(name.split(' ')[0]) // Solo primer nombre
+        setUserName(name.split(' ')[0])
     }, [])
 
-    const steps = [
-        {
-            title: '¡Bienvenido a FINNOVA!',
-            subtitle: `Hola ${userName}, estamos emocionados de tenerte aquí`,
-            icon: '🎉',
-            content: (
-                <div className="space-y-6">
-                    <p className="text-lg text-gray-700">
-                        Tu copiloto financiero impulsado por inteligencia artificial está listo para ayudarte a:
-                    </p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="flex items-start gap-3 p-4 bg-emerald-50 rounded-lg">
-                            <span className="text-2xl">📊</span>
-                            <div>
-                                <h4 className="font-semibold text-gray-900">Analizar tus Finanzas</h4>
-                                <p className="text-sm text-gray-600">Identifica patrones y oportunidades</p>
-                            </div>
-                        </div>
-                        <div className="flex items-start gap-3 p-4 bg-green-50 rounded-lg">
-                            <span className="text-2xl">🔮</span>
-                            <div>
-                                <h4 className="font-semibold text-gray-900">Predecir tu Futuro</h4>
-                                <p className="text-sm text-gray-600">Proyecciones precisas con IA</p>
-                            </div>
-                        </div>
-                        <div className="flex items-start gap-3 p-4 bg-green-50 rounded-lg">
-                            <span className="text-2xl">💡</span>
-                            <div>
-                                <h4 className="font-semibold text-gray-900">Recibir Recomendaciones</h4>
-                                <p className="text-sm text-gray-600">Consejos personalizados</p>
-                            </div>
-                        </div>
-                        <div className="flex items-start gap-3 p-4 bg-orange-50 rounded-lg">
-                            <span className="text-2xl">🎯</span>
-                            <div>
-                                <h4 className="font-semibold text-gray-900">Alcanzar tus Metas</h4>
-                                <p className="text-sm text-gray-600">Planifica tu éxito financiero</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )
-        },
-        {
-            title: 'Dashboard: Tu Centro de Control',
-            subtitle: 'Visualiza toda tu información financiera en un solo lugar',
-            icon: '📊',
-            content: (
-                <div className="space-y-6">
-                    <div className="bg-gradient-to-r from-emerald-500 to-green-600 rounded-xl p-1">
-                        <div className="bg-white rounded-lg p-6">
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                <div className="text-center p-4 bg-green-50 rounded-lg">
-                                    <div className="text-2xl mb-2">💰</div>
-                                    <div className="text-xs text-gray-600">Ingresos</div>
-                                    <div className="text-lg font-bold text-green-600">$3,000,000</div>
-                                </div>
-                                <div className="text-center p-4 bg-red-50 rounded-lg">
-                                    <div className="text-2xl mb-2">💸</div>
-                                    <div className="text-xs text-gray-600">Gastos</div>
-                                    <div className="text-lg font-bold text-red-600">$2,100,000</div>
-                                </div>
-                                <div className="text-center p-4 bg-emerald-50 rounded-lg">
-                                    <div className="text-2xl mb-2">💳</div>
-                                    <div className="text-xs text-gray-600">Balance</div>
-                                    <div className="text-lg font-bold text-emerald-600">$900,000</div>
-                                </div>
-                                <div className="text-center p-4 bg-orange-50 rounded-lg">
-                                    <div className="text-2xl mb-2">📊</div>
-                                    <div className="text-xs text-gray-600">Ahorro</div>
-                                    <div className="text-lg font-bold text-orange-600">30%</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="space-y-3">
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600 font-bold">✓</div>
-                            <p className="text-gray-700">Ve tus métricas financieras en tiempo real</p>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600 font-bold">✓</div>
-                            <p className="text-gray-700">Accesos rápidos a todas las funciones</p>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600 font-bold">✓</div>
-                            <p className="text-gray-700">Alertas importantes destacadas</p>
-                        </div>
-                    </div>
-                </div>
-            )
-        },
-        {
-            title: 'Registra tus Transacciones',
-            subtitle: 'Mantén un registro completo de ingresos y gastos',
-            icon: '💳',
-            content: (
-                <div className="space-y-6">
-                    <div className="bg-gray-50 rounded-xl p-6 border-2 border-dashed border-gray-300">
-                        <div className="text-center mb-4">
-                            <div className="text-4xl mb-2">💰</div>
-                            <h4 className="font-bold text-gray-900">Registrar Ingreso</h4>
-                        </div>
-                        <div className="space-y-3 text-sm">
-                            <div className="flex justify-between">
-                                <span className="text-gray-600">Monto:</span>
-                                <span className="font-semibold">$3,000,000</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-gray-600">Tipo:</span>
-                                <span className="font-semibold">Salario</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-gray-600">Fecha:</span>
-                                <span className="font-semibold">01/03/2024</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="space-y-3">
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold">✓</div>
-                            <p className="text-gray-700">Agrega ubicación, etiquetas y recurrencia</p>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold">✓</div>
-                            <p className="text-gray-700">Filtra y busca transacciones fácilmente</p>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold">✓</div>
-                            <p className="text-gray-700">Categoriza automáticamente tus gastos</p>
-                        </div>
-                    </div>
-                </div>
-            )
-        },
-        {
-            title: 'Predicciones con IA',
-            subtitle: 'Descubre qué te depara el futuro financiero',
-            icon: '🔮',
-            content: (
-                <div className="space-y-6">
-                    <div className="bg-gradient-to-r from-green-500 to-pink-600 rounded-xl p-6 text-white">
-                        <div className="flex items-center gap-4 mb-4">
-                            <div className="text-4xl">🤖</div>
-                            <div>
-                                <h4 className="font-bold text-lg">Predicción IA</h4>
-                                <p className="text-sm opacity-90">Basado en tus patrones</p>
-                            </div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <div className="text-sm opacity-90">Balance en 3 meses</div>
-                                <div className="text-2xl font-bold">$2,700,000</div>
-                            </div>
-                            <div>
-                                <div className="text-sm opacity-90">Confianza</div>
-                                <div className="text-2xl font-bold">85%</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="space-y-3">
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold">✓</div>
-                            <p className="text-gray-700">Predicciones de balance futuro</p>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold">✓</div>
-                            <p className="text-gray-700">Análisis de riesgo financiero</p>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold">✓</div>
-                            <p className="text-gray-700">Recomendaciones personalizadas</p>
-                        </div>
-                    </div>
-                </div>
-            )
-        },
-        {
-            title: 'Simulador de Escenarios',
-            subtitle: 'Visualiza diferentes futuros antes de decidir',
-            icon: '🎯',
-            content: (
-                <div className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="bg-emerald-50 p-4 rounded-lg border border-emerald-200">
-                            <div className="text-2xl mb-2">📈</div>
-                            <h4 className="font-semibold text-gray-900 mb-1">Situación Actual</h4>
-                            <p className="text-sm text-gray-600 mb-2">Mantener hábitos actuales</p>
-                            <div className="text-lg font-bold text-emerald-600">$900,000</div>
-                            <p className="text-xs text-gray-500">En 12 meses</p>
-                        </div>
-                        <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-                            <div className="text-2xl mb-2">🚀</div>
-                            <h4 className="font-semibold text-gray-900 mb-1">Optimizado</h4>
-                            <p className="text-sm text-gray-600 mb-2">Reducir gastos 10%</p>
-                            <div className="text-lg font-bold text-green-600">$1,800,000</div>
-                            <p className="text-xs text-gray-500">En 12 meses</p>
-                        </div>
-                    </div>
-                    <div className="space-y-3">
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-orange-600 font-bold">✓</div>
-                            <p className="text-gray-700">Compara 5 escenarios diferentes</p>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-orange-600 font-bold">✓</div>
-                            <p className="text-gray-700">Ve el impacto de tus decisiones</p>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-orange-600 font-bold">✓</div>
-                            <p className="text-gray-700">Recibe el mejor escenario recomendado</p>
-                        </div>
-                    </div>
-                </div>
-            )
-        },
-        {
-            title: '¡Estás Listo para Comenzar!',
-            subtitle: 'Empieza tu viaje hacia la libertad financiera',
-            icon: '🚀',
-            content: (
-                <div className="space-y-6">
-                    <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl p-8 text-white text-center">
-                        <div className="text-6xl mb-4">🎉</div>
-                        <h3 className="text-2xl font-bold mb-2">¡Todo Listo!</h3>
-                        <p className="text-lg opacity-90">
-                            Ya conoces las funciones principales de FINNOVA
-                        </p>
-                    </div>
-                    <div className="bg-emerald-50 rounded-xl p-6 border border-emerald-200">
-                        <h4 className="font-bold text-gray-900 mb-4">Próximos Pasos:</h4>
-                        <div className="space-y-3">
-                            <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 bg-emerald-600 text-white rounded-full flex items-center justify-center font-bold">1</div>
-                                <p className="text-gray-700">Registra tus primeras transacciones</p>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 bg-emerald-600 text-white rounded-full flex items-center justify-center font-bold">2</div>
-                                <p className="text-gray-700">Explora el dashboard y análisis</p>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 bg-emerald-600 text-white rounded-full flex items-center justify-center font-bold">3</div>
-                                <p className="text-gray-700">Revisa tus predicciones y simulaciones</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="text-center text-gray-600">
-                        <p className="text-sm">
-                            💡 Tip: Mientras más datos registres, más precisas serán las predicciones de la IA
-                        </p>
-                    </div>
-                </div>
-            )
-        }
-    ]
-
-    const handleNext = () => {
-        if (currentStep < steps.length - 1) {
-            setCurrentStep(currentStep + 1)
-        } else {
-            localStorage.removeItem('isNewUser')
-            router.push('/dashboard')
-        }
+    const goTo = (next: number) => {
+        setAnimating(true)
+        setTimeout(() => { setStep(next); setAnimating(false) }, 250)
     }
 
-    const handleSkip = () => {
+    const handleNext = () => {
+        if (step < steps.length - 1) goTo(step + 1)
+        else finish(true)
+    }
+
+    const finish = (withTour: boolean) => {
         localStorage.removeItem('isNewUser')
+        if (withTour) {
+            localStorage.setItem('startTour', 'true')
+        }
         router.push('/dashboard')
     }
 
-    const handlePrevious = () => {
-        if (currentStep > 0) {
-            setCurrentStep(currentStep - 1)
-        }
-    }
-
-    const progress = ((currentStep + 1) / steps.length) * 100
+    const progress = ((step + 1) / steps.length) * 100
+    const current = steps[step]
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-green-50 flex items-center justify-center p-4">
-            <div className="max-w-4xl w-full">
-                {/* Progress Bar */}
-                <div className="mb-8">
-                    <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-medium text-gray-600">
-                            Paso {currentStep + 1} de {steps.length}
-                        </span>
-                        <button
-                            onClick={handleSkip}
-                            className="text-sm text-gray-500 hover:text-gray-700 font-medium"
-                        >
-                            Saltar tutorial →
-                        </button>
+        <div className="min-h-screen bg-[#030712] flex items-center justify-center p-4 relative overflow-hidden">
+            <style>{`
+                @keyframes glow { 0%,100%{opacity:.4}50%{opacity:.9} }
+                @keyframes slideIn { from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)} }
+                @keyframes fadeUp { from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)} }
+                .glass { background:rgba(255,255,255,0.04); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.08); }
+                .step-in { animation: slideIn .25s ease forwards; }
+                .shimmer { background:linear-gradient(90deg,#10b981,#34d399,#10b981);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 3s linear infinite; }
+                @keyframes shimmer { 0%{background-position:-200% center}100%{background-position:200% center} }
+                .dot-active { background:#10b981; width:2rem; }
+                .dot { background:rgba(255,255,255,0.15); width:.5rem; }
+            `}</style>
+
+            {/* Orbes */}
+            <div className="absolute top-1/4 left-1/4 w-80 h-80 rounded-full pointer-events-none"
+                style={{ background: 'radial-gradient(circle,rgba(16,185,129,0.1) 0%,transparent 70%)', animation: 'glow 4s ease-in-out infinite' }} />
+            <div className="absolute bottom-1/4 right-1/4 w-64 h-64 rounded-full pointer-events-none"
+                style={{ background: 'radial-gradient(circle,rgba(52,211,153,0.07) 0%,transparent 70%)', animation: 'glow 6s ease-in-out 2s infinite' }} />
+            <div className="absolute inset-0 pointer-events-none"
+                style={{ backgroundImage: 'linear-gradient(rgba(16,185,129,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(16,185,129,0.03) 1px,transparent 1px)', backgroundSize: '60px 60px' }} />
+
+            <div className="relative z-10 w-full max-w-2xl">
+                {/* Header */}
+                <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-2">
+                        <Logo width={32} height={32} />
+                        <span className="font-black shimmer text-lg">FINNOVA</span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div
-                            className="bg-gradient-to-r from-emerald-600 to-green-600 h-2 rounded-full transition-all duration-300"
-                            style={{ width: `${progress}%` }}
-                        />
+                    <button onClick={() => finish(false)}
+                        className="text-gray-600 hover:text-gray-400 text-sm transition-colors">
+                        Saltar →
+                    </button>
+                </div>
+
+                {/* Barra de progreso */}
+                <div className="mb-6">
+                    <div className="flex justify-between text-xs text-gray-600 mb-2">
+                        <span>Paso {step + 1} de {steps.length}</span>
+                        <span>{Math.round(progress)}%</span>
+                    </div>
+                    <div className="w-full rounded-full h-1.5" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                        <div className="h-1.5 rounded-full transition-all duration-500"
+                            style={{ width: `${progress}%`, background: 'linear-gradient(90deg,#10b981,#34d399)' }} />
                     </div>
                 </div>
 
-                {/* Content Card */}
-                <div className="bg-white rounded-2xl shadow-2xl p-8 md:p-12 border border-gray-200">
+                {/* Card principal */}
+                <div className={`glass rounded-3xl p-8 md:p-10 ${animating ? 'opacity-0' : 'step-in'}`}>
+                    {/* Icono y título */}
                     <div className="text-center mb-8">
-                        <div className="text-7xl mb-4">{steps[currentStep].icon}</div>
-                        <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                            {steps[currentStep].title}
+                        <div className="text-6xl mb-4" style={{ filter: 'drop-shadow(0 0 20px rgba(16,185,129,0.4))' }}>
+                            {current.icon}
+                        </div>
+                        <h2 className="text-2xl md:text-3xl font-black text-white mb-2">
+                            {step === 0 ? `¡Hola, ${userName}! 👋` : current.title}
                         </h2>
-                        <p className="text-lg text-gray-600">
-                            {steps[currentStep].subtitle}
-                        </p>
+                        <p className="text-gray-400">{current.subtitle}</p>
                     </div>
 
-                    <div className="mb-8">
-                        {steps[currentStep].content}
-                    </div>
+                    {/* Contenido por paso */}
+                    {step === 0 && (
+                        <div className="grid grid-cols-2 gap-3">
+                            {current.features!.map((f, i) => (
+                                <div key={i} className="rounded-2xl p-4 transition-all hover:scale-105"
+                                    style={{ background: 'rgba(16,185,129,0.06)', border: '1px solid rgba(16,185,129,0.15)', animationDelay: `${i * 0.1}s` }}>
+                                    <div className="text-2xl mb-2">{f.icon}</div>
+                                    <div className="font-semibold text-white text-sm">{f.label}</div>
+                                    <div className="text-gray-500 text-xs mt-0.5">{f.desc}</div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
 
-                    {/* Navigation Buttons */}
-                    <div className="flex gap-4">
-                        {currentStep > 0 && (
-                            <button
-                                onClick={handlePrevious}
-                                className="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:border-gray-400 transition"
-                            >
+                    {current.demo === 'transactions' && (
+                        <div className="space-y-4">
+                            <div className="rounded-2xl p-5" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
+                                <div className="flex items-center justify-between mb-4">
+                                    <span className="text-sm font-semibold text-gray-300">Transacciones recientes</span>
+                                    <span className="text-xs text-emerald-400">+ Agregar</span>
+                                </div>
+                                {[
+                                    { icon: '💰', label: 'Salario', amount: '+$3,000,000', color: 'text-emerald-400' },
+                                    { icon: '🛒', label: 'Supermercado', amount: '-$180,000', color: 'text-red-400' },
+                                    { icon: '🚗', label: 'Transporte', amount: '-$50,000', color: 'text-red-400' },
+                                ].map((t, i) => (
+                                    <div key={i} className="flex items-center justify-between py-3 border-b last:border-0"
+                                        style={{ borderColor: 'rgba(255,255,255,0.05)' }}>
+                                        <div className="flex items-center gap-3">
+                                            <span className="text-xl">{t.icon}</span>
+                                            <span className="text-sm text-gray-300">{t.label}</span>
+                                        </div>
+                                        <span className={`text-sm font-bold ${t.color}`}>{t.amount}</span>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="flex gap-2 text-xs text-gray-500">
+                                <span className="px-3 py-1 rounded-full" style={{ background: 'rgba(16,185,129,0.1)', color: '#10b981' }}>✓ Categorías automáticas</span>
+                                <span className="px-3 py-1 rounded-full" style={{ background: 'rgba(16,185,129,0.1)', color: '#10b981' }}>✓ Etiquetas y ubicación</span>
+                            </div>
+                        </div>
+                    )}
+
+                    {current.demo === 'predictions' && (
+                        <div className="space-y-4">
+                            <div className="rounded-2xl p-5" style={{ background: 'linear-gradient(135deg,rgba(139,92,246,0.15),rgba(59,130,246,0.15))', border: '1px solid rgba(139,92,246,0.2)' }}>
+                                <div className="flex items-center gap-3 mb-4">
+                                    <span className="text-2xl">🤖</span>
+                                    <div>
+                                        <div className="text-sm font-bold text-white">Predicción IA — 3 meses</div>
+                                        <div className="text-xs text-gray-400">Basado en tus patrones</div>
+                                    </div>
+                                    <span className="ml-auto text-xs px-2 py-1 rounded-full" style={{ background: 'rgba(16,185,129,0.2)', color: '#10b981' }}>85% confianza</span>
+                                </div>
+                                <div className="flex items-end gap-1 h-16">
+                                    {[40, 55, 48, 70, 62, 80, 75, 90, 85, 95, 88, 100].map((h, i) => (
+                                        <div key={i} className="flex-1 rounded-t transition-all"
+                                            style={{ height: `${h}%`, background: `rgba(139,92,246,${0.2 + (i / 12) * 0.6})` }} />
+                                    ))}
+                                </div>
+                                <div className="mt-3 flex justify-between text-xs text-gray-500">
+                                    <span>Hoy</span>
+                                    <span className="text-violet-400 font-bold">Balance proyectado: $2,700,000</span>
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-3 gap-2 text-xs text-center">
+                                {[
+                                    { label: 'Tendencia', value: '📈 Creciente', color: 'text-emerald-400' },
+                                    { label: 'Riesgo', value: '🟢 Bajo', color: 'text-emerald-400' },
+                                    { label: 'Ahorro/mes', value: '$450,000', color: 'text-blue-400' },
+                                ].map(s => (
+                                    <div key={s.label} className="rounded-xl p-3" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
+                                        <div className="text-gray-500 mb-1">{s.label}</div>
+                                        <div className={`font-bold ${s.color}`}>{s.value}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {current.demo === 'simulator' && (
+                        <div className="space-y-3">
+                            {[
+                                { icon: '📊', label: 'Situación actual', balance: '$900,000', badge: '', color: 'rgba(255,255,255,0.04)' },
+                                { icon: '✂️', label: 'Reducir gastos 20%', balance: '$1,620,000', badge: '🏆 Recomendado', color: 'rgba(16,185,129,0.08)' },
+                                { icon: '📈', label: 'Aumentar ingresos 15%', balance: '$1,485,000', badge: '', color: 'rgba(255,255,255,0.04)' },
+                                { icon: '💳', label: 'Pago agresivo deuda', balance: '$1,200,000', badge: '', color: 'rgba(255,255,255,0.04)' },
+                            ].map((s, i) => (
+                                <div key={i} className="flex items-center justify-between rounded-xl px-4 py-3 transition-all"
+                                    style={{ background: s.color, border: `1px solid ${s.badge ? 'rgba(16,185,129,0.3)' : 'rgba(255,255,255,0.07)'}` }}>
+                                    <div className="flex items-center gap-3">
+                                        <span>{s.icon}</span>
+                                        <div>
+                                            <div className="text-sm text-white font-medium">{s.label}</div>
+                                            {s.badge && <span className="text-xs text-emerald-400">{s.badge}</span>}
+                                        </div>
+                                    </div>
+                                    <span className={`text-sm font-bold ${s.badge ? 'text-emerald-400' : 'text-gray-300'}`}>{s.balance}</span>
+                                </div>
+                            ))}
+                            <p className="text-xs text-gray-600 text-center">Proyección a 12 meses</p>
+                        </div>
+                    )}
+
+                    {current.final && (
+                        <div className="text-center space-y-6">
+                            <div className="rounded-2xl p-6" style={{ background: 'linear-gradient(135deg,rgba(16,185,129,0.1),rgba(52,211,153,0.05))', border: '1px solid rgba(16,185,129,0.2)' }}>
+                                <div className="text-4xl mb-3">🗺️</div>
+                                <h3 className="text-white font-bold text-lg mb-2">Tour Interactivo del Dashboard</h3>
+                                <p className="text-gray-400 text-sm leading-relaxed">
+                                    Te mostraremos cada sección del dashboard con explicaciones en tiempo real.
+                                    Puedes pausarlo cuando quieras.
+                                </p>
+                            </div>
+                            <div className="grid grid-cols-2 gap-3 text-xs">
+                                {['Dashboard', 'Gamificación', 'Predicciones', 'Simulador', 'Análisis', 'Alertas'].map(f => (
+                                    <div key={f} className="flex items-center gap-2 text-gray-400">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                                        {f}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Botones */}
+                    <div className="flex gap-3 mt-8">
+                        {step > 0 && (
+                            <button onClick={() => goTo(step - 1)}
+                                className="px-5 py-3 rounded-xl text-sm font-semibold text-gray-400 hover:text-white transition-colors"
+                                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
                                 ← Anterior
                             </button>
                         )}
-                        <button
-                            onClick={handleNext}
-                            className="flex-1 bg-gradient-to-r from-emerald-600 to-green-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all transform hover:scale-105"
-                        >
-                            {currentStep === steps.length - 1 ? '¡Comenzar! 🚀' : 'Siguiente →'}
+                        <button onClick={handleNext}
+                            className="flex-1 py-3.5 rounded-xl font-bold text-sm text-white relative overflow-hidden group transition-all"
+                            style={{ background: 'linear-gradient(135deg,#10b981,#059669)', boxShadow: '0 0 30px rgba(16,185,129,0.3)' }}>
+                            <span className="relative z-10">
+                                {step === steps.length - 1 ? '🗺️ Iniciar Tour del Dashboard' : 'Siguiente →'}
+                            </span>
+                            <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity" />
                         </button>
+                        {step === steps.length - 1 && (
+                            <button onClick={() => finish(false)}
+                                className="px-5 py-3 rounded-xl text-sm font-semibold text-gray-500 hover:text-gray-300 transition-colors"
+                                style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                                Sin tour
+                            </button>
+                        )}
                     </div>
                 </div>
 
-                {/* Dots Indicator */}
-                <div className="flex justify-center gap-2 mt-6">
-                    {steps.map((_, index) => (
-                        <button
-                            key={index}
-                            onClick={() => setCurrentStep(index)}
-                            className={`w-2 h-2 rounded-full transition-all ${index === currentStep
-                                ? 'bg-emerald-600 w-8'
-                                : 'bg-gray-300 hover:bg-gray-400'
-                                }`}
-                        />
+                {/* Dots */}
+                <div className="flex justify-center gap-2 mt-5">
+                    {steps.map((_, i) => (
+                        <button key={i} onClick={() => goTo(i)}
+                            className="h-1.5 rounded-full transition-all duration-300"
+                            style={{ width: i === step ? '2rem' : '0.5rem', background: i === step ? '#10b981' : 'rgba(255,255,255,0.15)' }} />
                     ))}
                 </div>
             </div>
