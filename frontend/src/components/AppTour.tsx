@@ -4,9 +4,16 @@ import { useEffect } from 'react'
 
 export function useAppTour() {
     const startTour = async () => {
-        // Importar driver.js dinámicamente (solo client-side)
         const { driver } = await import('driver.js')
-        await import('driver.js/dist/driver.css')
+
+        // Inyectar el CSS de driver.js dinámicamente si no está ya
+        if (!document.getElementById('driver-js-css')) {
+            const link = document.createElement('link')
+            link.id = 'driver-js-css'
+            link.rel = 'stylesheet'
+            link.href = 'https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.css'
+            document.head.appendChild(link)
+        }
 
         const driverObj = driver({
             showProgress: true,
