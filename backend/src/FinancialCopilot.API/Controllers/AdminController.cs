@@ -18,7 +18,25 @@ public class AdminController : ControllerBase
         _context = context;
     }
 
-    // ─── MÉTRICAS ────────────────────────────────────────────────────────────
+    // ─── STATS PÚBLICAS (sin auth) ──────────────────────────────────────────────
+
+  [AllowAnonymous]
+  [HttpGet("public-stats")]
+  public async Task<IActionResult> GetPublicStats()
+  {
+      var totalUsers      = await _context.Users.CountAsync();
+      var totalExpenses   = await _context.Expenses.CountAsync();
+      var totalIncomes    = await _context.Incomes.CountAsync();
+      var totalTransactions = totalExpenses + totalIncomes;
+
+      return Ok(new
+      {
+          totalUsers,
+          totalTransactions,
+      });
+  }
+
+  // ─── MÉTRICAS ────────────────────────────────────────────────────────────
 
     [HttpGet("metrics")]
     public async Task<IActionResult> GetMetrics()

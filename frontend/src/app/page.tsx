@@ -43,6 +43,7 @@ export default function LandingPage() {
     const [scrolled, setScrolled] = useState(false)
     const [activeFeature, setActiveFeature] = useState(0)
     const [mobileMenu, setMobileMenu] = useState(false)
+    const [liveStats, setLiveStats] = useState({ totalUsers: 0, totalTransactions: 0 })
 
     useEffect(() => {
         const onScroll = () => setScrolled(window.scrollY > 20)
@@ -53,6 +54,14 @@ export default function LandingPage() {
     useEffect(() => {
         const interval = setInterval(() => setActiveFeature(f => (f + 1) % 6), 3000)
         return () => clearInterval(interval)
+    }, [])
+
+    useEffect(() => {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+        fetch(`${apiUrl}/admin/public-stats`)
+            .then(r => r.ok ? r.json() : null)
+            .then(d => { if (d) setLiveStats(d) })
+            .catch(() => { }) // silencioso — si falla muestra 0
     }, [])
 
     const particles = Array.from({ length: 20 }, (_, i) => ({
@@ -80,10 +89,10 @@ export default function LandingPage() {
     ]
 
     const stats = [
-        { value: 12500, suffix: '+', label: 'Usuarios activos' },
-        { value: 30, suffix: '%', label: 'Reducción promedio de gastos' },
-        { value: 98, suffix: '%', label: 'Satisfacción' },
-        { value: 4800, suffix: 'M+', label: 'COP analizados' },
+        { value: liveStats.totalUsers, suffix: '', label: 'Usuarios registrados' },
+        { value: liveStats.totalTransactions, suffix: '', label: 'Transacciones registradas' },
+        { value: 3, suffix: ' servicios', label: 'IA + Backend + DB' },
+        { value: 2026, suffix: '', label: 'Año de lanzamiento' },
     ]
 
     return (
