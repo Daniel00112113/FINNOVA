@@ -10,6 +10,7 @@ export default function LoginPage() {
     const router = useRouter()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [showPassword, setShowPassword] = useState(false)
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
 
@@ -17,94 +18,120 @@ export default function LoginPage() {
         e.preventDefault()
         setError('')
         setLoading(true)
-
         try {
             await login({ email, password })
             router.push('/dashboard')
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Error al iniciar sesión')
+            const msg = err.response?.data?.message || 'Error al iniciar sesión'
+            setError(msg.includes('bloqueada') ? `🔒 ${msg}` : msg)
         } finally {
             setLoading(false)
         }
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4">
-            <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-xl">
-                <div className="text-center">
-                    <div className="flex justify-center mb-4">
-                        <Logo size="lg" />
-                    </div>
-                    <h2 className="text-3xl font-black text-gray-900">
-                        Financial Copilot
-                    </h2>
-                    <p className="mt-2 text-sm text-gray-600">
-                        Inicia sesión en tu cuenta
-                    </p>
+        <div className="min-h-screen bg-[#030712] flex items-center justify-center px-4 relative overflow-hidden">
+            <style>{`
+                @keyframes glow { 0%,100%{opacity:.4}50%{opacity:.8} }
+                @keyframes float { from{transform:translateY(0) rotate(0)}to{transform:translateY(-16px) rotate(180deg)} }
+                @keyframes slideUp { from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)} }
+                .glass { background:rgba(255,255,255,0.04); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.08); }
+                .input-dark { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:white; transition:all .2s; }
+                .input-dark:focus { outline:none; border-color:rgba(16,185,129,0.6); box-shadow:0 0 0 3px rgba(16,185,129,0.1); background:rgba(255,255,255,0.07); }
+                .input-dark::placeholder { color:rgba(255,255,255,0.25); }
+                .animate-slide-up { animation:slideUp .6s ease forwards; }
+                .shimmer { background:linear-gradient(90deg,#10b981,#34d399,#10b981);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 3s linear infinite; }
+                @keyframes shimmer { 0%{background-position:-200% center}100%{background-position:200% center} }
+            `}</style>
+
+            {/* Orbes de fondo */}
+            <div className="absolute top-1/4 left-1/3 w-72 h-72 rounded-full pointer-events-none"
+                style={{ background: 'radial-gradient(circle,rgba(16,185,129,0.1) 0%,transparent 70%)', animation: 'glow 4s ease-in-out infinite' }} />
+            <div className="absolute bottom-1/4 right-1/3 w-56 h-56 rounded-full pointer-events-none"
+                style={{ background: 'radial-gradient(circle,rgba(52,211,153,0.07) 0%,transparent 70%)', animation: 'glow 6s ease-in-out 2s infinite' }} />
+
+            {/* Grid de fondo */}
+            <div className="absolute inset-0 pointer-events-none"
+                style={{ backgroundImage: 'linear-gradient(rgba(16,185,129,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(16,185,129,0.04) 1px,transparent 1px)', backgroundSize: '60px 60px' }} />
+
+            <div className="relative z-10 w-full max-w-md animate-slide-up">
+                {/* Logo */}
+                <div className="text-center mb-8">
+                    <Link href="/" className="inline-flex items-center gap-2 mb-4">
+                        <Logo width={44} height={44} />
+                        <span className="text-2xl font-black shimmer">FINNOVA</span>
+                    </Link>
+                    <h1 className="text-2xl font-black text-white">Bienvenido de vuelta</h1>
+                    <p className="text-gray-500 text-sm mt-1">Inicia sesión en tu cuenta</p>
                 </div>
 
-                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+                {/* Card */}
+                <div className="glass rounded-2xl p-8">
                     {error && (
-                        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                        <div className="mb-5 px-4 py-3 rounded-xl text-sm font-medium"
+                            style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#fca5a5' }}>
                             {error}
                         </div>
                     )}
 
-                    <div className="space-y-4">
+                    <form onSubmit={handleSubmit} className="space-y-5">
                         <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                                Email
-                            </label>
+                            <label className="block text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">Email</label>
                             <input
-                                id="email"
-                                name="email"
-                                type="email"
-                                autoComplete="email"
-                                required
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                type="email" required autoComplete="email"
+                                value={email} onChange={e => setEmail(e.target.value)}
                                 placeholder="tu@email.com"
+                                className="input-dark w-full px-4 py-3 rounded-xl text-sm"
                             />
                         </div>
 
                         <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                                Contraseña
-                            </label>
-                            <input
-                                id="password"
-                                name="password"
-                                type="password"
-                                autoComplete="current-password"
-                                required
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="••••••••"
-                            />
+                            <label className="block text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">Contraseña</label>
+                            <div className="relative">
+                                <input
+                                    type={showPassword ? 'text' : 'password'} required autoComplete="current-password"
+                                    value={password} onChange={e => setPassword(e.target.value)}
+                                    placeholder="••••••••"
+                                    className="input-dark w-full px-4 py-3 pr-12 rounded-xl text-sm"
+                                />
+                                <button type="button" onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors text-lg">
+                                    {showPassword ? '🙈' : '👁️'}
+                                </button>
+                            </div>
                         </div>
-                    </div>
 
-                    <div>
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                        >
-                            {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
+                        <button type="submit" disabled={loading}
+                            className="w-full py-3.5 rounded-xl font-bold text-sm text-white transition-all disabled:opacity-50 relative overflow-hidden group"
+                            style={{ background: 'linear-gradient(135deg,#10b981,#059669)', boxShadow: loading ? 'none' : '0 0 30px rgba(16,185,129,0.3)' }}>
+                            <span className="relative z-10">
+                                {loading ? (
+                                    <span className="flex items-center justify-center gap-2">
+                                        <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                                        </svg>
+                                        Iniciando sesión...
+                                    </span>
+                                ) : 'Iniciar Sesión →'}
+                            </span>
+                            <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity" />
                         </button>
-                    </div>
+                    </form>
 
-                    <div className="text-center">
-                        <p className="text-sm text-gray-600">
+                    <div className="mt-6 pt-6 text-center" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+                        <p className="text-gray-500 text-sm">
                             ¿No tienes cuenta?{' '}
-                            <Link href="/auth/register" className="font-medium text-blue-600 hover:text-blue-500">
-                                Regístrate aquí
+                            <Link href="/auth/register" className="text-emerald-400 hover:text-emerald-300 font-semibold transition-colors">
+                                Regístrate gratis
                             </Link>
                         </p>
                     </div>
-                </form>
+                </div>
+
+                <p className="text-center text-gray-600 text-xs mt-6">
+                    🇨🇴 Hecho en Colombia • 100% Seguro
+                </p>
             </div>
         </div>
     )
