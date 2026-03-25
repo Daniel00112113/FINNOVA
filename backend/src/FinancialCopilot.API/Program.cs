@@ -380,25 +380,20 @@ static async Task BootstrapAdminAsync(ApplicationDbContext db, IConfiguration co
         var adminEmail = config["AdminBootstrap:Email"];
         var adminPassword = config["AdminBootstrap:Password"];
 
-        // Si no hay variables configuradas, no hacer nada
         if (string.IsNullOrEmpty(adminEmail) || string.IsNullOrEmpty(adminPassword))
             return;
 
-        // Si ya existe un admin, no hacer nada (idempotente)
-        if (await db.Users.AnyAsync(u => u.Role == "admin"))
-        {
-            Console.WriteLine("ℹ️  Admin ya existe, bootstrap omitido");
-            return;
-        }
-
-        // Crear o promover el usuario admin
         var existing = await db.Users.FirstOrDefaultAsync(u => u.Email == adminEmail);
         if (existing != null)
         {
+            // Siempre actualizar: rol, contraseña y desbloquear
             existing.Role = "admin";
+            existing.PasswordHash = BCrypt.Net.BCrypt.HashPassword(adminPassword, 12);
+            existing.LockedUntil = null;
+            existing.FailedLoginAttempts = 0;
             existing.UpdatedAt = DateTime.UtcNow;
             await db.SaveChangesAsync();
-            Console.WriteLine($"✅ Usuario {adminEmail} promovido a admin");
+            Console.WriteLine($"✅ Admin actualizado: {adminEmail} (contraseña y rol sincronizados)");
         }
         else
         {
@@ -416,7 +411,7 @@ static async Task BootstrapAdminAsync(ApplicationDbContext db, IConfiguration co
             Console.WriteLine($"✅ Admin creado: {adminEmail}");
         }
 
-        Console.WriteLine("⚠️  IMPORTANTE: Elimina ADMIN_EMAIL y ADMIN_PASSWORD de las env vars en Render ahora.");
+        Console.WriteLine("⚠️  IMPORTANTE: Elimina AdminBootstrap__Email y AdminBootstrap__Password de Render después de hacer login.");
     }
     catch (Exception ex)
     {
